@@ -1,0 +1,17 @@
+/* This page mostly relies on the global .styled-table */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.history-header h1 {
+    font-family: var(--font-heading);
+}
+
+.details-total-row {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 700;
+}
