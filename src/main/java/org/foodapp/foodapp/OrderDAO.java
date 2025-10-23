@@ -69,6 +69,18 @@ public class OrderDAO {
         return userOrders;
     }
 
+    /**
+     * Retrieves a single order by its unique ID.
+     */
+    public Order getOrderById(int orderId) {
+        for (Order order : mockOrders) {
+            if (order.getId() == orderId) {
+                return order; // Found it
+            }
+        }
+        return null; // Not found
+    }
+
 
 
 

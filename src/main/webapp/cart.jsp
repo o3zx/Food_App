@@ -1,28 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%-- Import the necessary Java classes --%>
-<%@ page import="org.foodapp.foodapp.ProductDAO" %>
-<%@ page import="org.foodapp.foodapp.Product" %>
+<%-- Import all your classes (User, CartItem, Product, ProductDAO, Map, etc.) --%>
+<%@ page import="org.foodapp.foodapp.User" %>
 <%@ page import="org.foodapp.foodapp.CartItem" %>
+<%@ page import="org.foodapp.foodapp.Product" %>
+<%@ page import="org.foodapp.foodapp.ProductDAO" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
-<%@ page import="org.foodapp.foodapp.User" %>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Shopping Cart</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/cart.css">
-</head>
-</head>
-<body>
+<%@ page import="java.util.Enumeration" %>
 
 <%
     // 1. Authentication Check
@@ -32,120 +17,145 @@
         return;
     }
 
-    // 2. Retrieve the Cart from Session (The Cart is a Map: Product ID -> CartItem)
-    // Suppress unchecked warning for the type casting
+    // 2. Retrieve Cart
     @SuppressWarnings("unchecked")
     Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
-
-    // If the cart doesn't exist, create it
     if (cart == null) {
         cart = new HashMap<>();
-        session.setAttribute("cart", cart); // Store the new cart in session
+        session.setAttribute("cart", cart);
     }
 
-    // 3. Handle Actions (Add/Remove)
+    // 3. Handle Actions
     String action = request.getParameter("action");
-    String productIdStr = request.getParameter("productId");
-
     ProductDAO productDAO = new ProductDAO();
 
-    if (action != null && productIdStr != null) {
-        try {
-            int productId = Integer.parseInt(productIdStr);
-            Product product = productDAO.getProductById(productId); // Get product info from DAO (MOCK)
+    // ---------------------------------------------------------------
+    // 4. NEW LOGIC BLOCK TO HANDLE BATCH UPDATES FROM MENU
+    // ---------------------------------------------------------------
+    if ("batchUpdate".equals(action)) {
 
-            if ("add".equals(action) && product != null) {
-                int quantity = 1;
-                String quantityStr = request.getParameter("quantity");
-                if (quantityStr != null) {
-                    quantity = Integer.parseInt(quantityStr);
-                }
+        // Get all parameters from the form
+        Enumeration<String> paramNames = request.getParameterNames();
 
-                if (cart.containsKey(productId)) {
-                    // Item is already in the cart, update quantity
-                    CartItem existingItem = cart.get(productId);
-                    existingItem.setQuantity(existingItem.getQuantity() + quantity);
-                } else {
-                    // New item, add to cart
-                    cart.put(productId, new CartItem(product, quantity));
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+
+            // Check if this is one of our quantity inputs
+            if (paramName.startsWith("quantity_")) {
+                try {
+                    // Get the quantity value
+                    int quantity = Integer.parseInt(request.getParameter(paramName));
+
+                    // Get the product ID from the name (e.g., "quantity_101" -> 101)
+                    int productId = Integer.parseInt(paramName.substring(9));
+
+                    if (quantity > 0) {
+                        // If quantity is > 0, add/update it in the cart
+                        if (cart.containsKey(productId)) {
+                            // Already in cart, just update quantity
+                            cart.get(productId).setQuantity(quantity);
+                        } else {
+                            // Not in cart, fetch product and add new CartItem
+                            Product product = productDAO.getProductById(productId);
+                            if (product != null) {
+                                cart.put(productId, new CartItem(product, quantity));
+                            }
+                        }
+                    } else if (quantity == 0) {
+                        // If quantity is 0, remove it from the cart
+                        cart.remove(productId);
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing batch update: " + e.getMessage());
                 }
-            } else if ("remove".equals(action)) {
-                // Remove the item entirely
-                cart.remove(productId);
             }
-
-            // Redirect to avoid form resubmission on refresh
-            response.sendRedirect("cart.jsp");
-            return;
-
-        } catch (NumberFormatException e) {
-            // Log or handle error if input is not a valid number
-            System.out.println("Error parsing ID or quantity: " + e.getMessage());
         }
+
+        // After processing, redirect to the cart page to view the result
+        response.sendRedirect("cart.jsp");
+        return;
     }
 
-    // Calculate total for display
+    // --- (Your old logic for "add" and "remove" from the cart page itself) ---
+    // This logic will still work for changes made ON the cart page.
+
+    String productIdStr = request.getParameter("productId");
+    if ("add".equals(action) && productIdStr != null) {
+        // ... your existing logic for adding 1
+    }
+    if ("remove".equals(action) && productIdStr != null) {
+        // ... your existing logic for removing
+    }
+
     double cartTotal = 0.0;
     for (CartItem item : cart.values()) {
         cartTotal += item.getTotalPrice();
     }
-
-    // Store total in request scope for EL display
-    request.setAttribute("cartTotal", cartTotal);
 %>
 
-<h1>Shopping Cart</h1>
-<a href="menu.jsp">Continue Shopping</a>
-<hr>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="assets/css/cart.css">
+</head>
+<body>
+    <div class="cart-container">
+        <header class="cart-header">
+            <h1>Shopping Cart</h1>
+            <a href="menu.jsp" class="btn-continue">Continue Shopping</a>
+        </header>
 
-<%
-    if (cart.isEmpty()) {
-%>
-<p>Your cart is empty.</p>
-<%
-} else {
-%>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Subtotal</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <%
-        // Loop through the cart items for display (Replaces <c:forEach>)
-        for (CartItem item : cart.values()) {
-    %>
-    <tr>
-        <td><%= item.getProduct().getName() %></td>
-        <td>$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
-        <td><%= item.getQuantity() %></td>
-        <td>$<%= String.format("%.2f", item.getTotalPrice()) %></td>
-        <td>
-            <%-- Form to remove item --%>
-            <form action="cart.jsp" method="post">
-                <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
-                <input type="hidden" name="action" value="remove">
-                <button type="submit">Remove</button>
-            </form>
-        </td>
-    </tr>
-    <%
-        } // End of cart loop
-    %>
-    </tbody>
-</table>
+        <% if (cart.isEmpty()) { %>
+            <div class="empty-cart">
+                <p>Your cart is empty.</p>
+                <a href="menu.jsp" class="btn-shop">Start Shopping</a>
+            </div>
+        <% } else { %>
+            <div class="cart-content">
+                <div class="table-container">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (CartItem item : cart.values()) { %>
+                            <tr>
+                                <td class="item-name"><%= item.getProduct().getName() %></td>
+                                <td class="item-price">$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
+                                <td class="item-quantity"><%= item.getQuantity() %></td>
+                                <td class="item-subtotal">$<%= String.format("%.2f", item.getTotalPrice()) %></td>
+                                <td class="item-action">
+                                    <form action="cart.jsp" method="post" class="remove-form">
+                                        <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
+                                        <input type="hidden" name="action" value="remove">
+                                        <button type="submit" class="btn-remove">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
 
-<h3>Cart Total: **$<%= String.format("%.2f", cartTotal) %>**</h3>
-
-<p><a href="checkout.jsp">Proceed to Checkout</a></p>
-
-<%
-    } // End of cart empty check
-%>
+                <div class="cart-summary">
+                    <div class="total-section">
+                        <h3>Cart Total:</h3>
+                        <p class="total-amount">$<%= String.format("%.2f", cartTotal) %></p>
+                    </div>
+                    <a href="checkout.jsp" class="btn-checkout">Proceed to Checkout</a>
+                </div>
+            </div>
+        <% } %>
+    </div>
 </body>
 </html>

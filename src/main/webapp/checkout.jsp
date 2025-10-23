@@ -6,21 +6,6 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/cart.css">
-
-</head>
-<body>
 <%
     // 1. Authentication Check
     User user = (User) session.getAttribute("user");
@@ -46,48 +31,75 @@
     }
 %>
 
-<h1>Order Summary</h1>
-<p>Please review your order before placing it.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Food Ordering App</title>
+    <link rel="stylesheet" href="assets/css/checkout.css">
+</head>
+<body>
+    <div class="checkout-container">
+        <header class="checkout-header">
+            <h1>Order Summary</h1>
+            <p class="subtitle">Please review your order before placing it.</p>
+        </header>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Subtotal</th>
-    </tr>
-    </thead>
-    <tbody>
-    <%
-        for (CartItem item : cart.values()) {
-    %>
-    <tr>
-        <td><%= item.getProduct().getName() %></td>
-        <td>$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
-        <td><%= item.getQuantity() %></td>
-        <td>$<%= String.format("%.2f", item.getTotalPrice()) %></td>
-    </tr>
-    <%
-        } // End loop
-    %>
-    </tbody>
-</table>
+        <div class="checkout-content">
+            <section class="order-items">
+                <h2>Your Items</h2>
+                <div class="table-container">
+                    <table class="checkout-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (CartItem item : cart.values()) { %>
+                            <tr>
+                                <td class="item-name"><%= item.getProduct().getName() %></td>
+                                <td class="item-price">$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
+                                <td class="item-quantity"><%= item.getQuantity() %></td>
+                                <td class="item-subtotal">$<%= String.format("%.2f", item.getTotalPrice()) %></td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
 
-<h3>Total: **$<%= String.format("%.2f", cartTotal) %>**</h3>
+                <div class="order-total">
+                    <span class="total-label">Total:</span>
+                    <span class="total-amount">$<%= String.format("%.2f", cartTotal) %></span>
+                </div>
+            </section>
 
-<hr>
+            <section class="delivery-section">
+                <h2>Delivery Information</h2>
+                <div class="delivery-info">
+                    <div class="info-row">
+                        <strong>Deliver to:</strong>
+                        <span><%= user.getUsername() %></span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Address:</strong>
+                        <span>(Address would go here)</span>
+                    </div>
+                </div>
+            </section>
 
-<%-- This form POSTs to our logic page --%>
-<form action="placeOrder.jsp" method="post">
-    <p>
-        <strong>Deliver to:</strong> <%= user.getUsername() %> <br>
-        (Address would go here)
-    </p>
-    <button type="submit" style="font-size: 1.2em;">Confirm & Place Order</button>
-</form>
+            <form action="payment.jsp" method="post" class="checkout-form">
+                <button type="submit" class="btn">Proceed to Payment</button>
+            </form>
 
-<p><a href="cart.jsp">Back to Cart</a></p>
-
+            <div class="checkout-actions">
+                <a href="cart.jsp" class="btn-back">Back to Cart</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

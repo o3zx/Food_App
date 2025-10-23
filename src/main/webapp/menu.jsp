@@ -6,70 +6,89 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.foodapp.foodapp.User" %>
 
+<%
+    // 1. Authentication Check
+    User user = (User) session.getAttribute("user");
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    // 2. Data Retrieval
+    ProductDAO productDAO = new ProductDAO();
+    List<Product> products = productDAO.getAllProducts();
+
+    // 3. Store data in Request Scope
+    request.setAttribute("products", products);
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Food Menu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Menu - Food Ordering App</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/menu.css">
-
 </head>
 <body>
 
-<%
-    // 1. Authentication Check (Replaces <c:if> and <c:redirect>)
-    // Check if the user object exists in the session
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        // If not logged in, redirect to the login page immediately
-        response.sendRedirect("login.jsp");
-        return; // Stop processing the rest of the page
-    }
+<header class="main-header">
+    <a href="menu.jsp" class="logo">FoodApp</a>
+    <nav>
+        <a href="cart.jsp">🛒 Cart</a>
+        <a href="orderHistory.jsp">My Orders</a>
+        <a href="logout.jsp">Logout</a>
+    </nav>
+</header>
 
-    // 2. Data Retrieval (Controller logic)
-    ProductDAO productDAO = new ProductDAO();
-    List<Product> products = productDAO.getAllProducts();
-
-    // 3. Store data in Request Scope for cleaner output using EL (optional, but good practice)
-    request.setAttribute("products", products);
-%>
-
-<h1>Welcome, <%= user.getUsername() %>!</h1>
-<h2>Today's Menu (Mocked Products)</h2>
-
-<div class="product-list">
-    <%
-        // 4. Product Iteration (Replaces <c:forEach>)
-        // We use the List stored in the 'products' variable
-        for (Product product : products) {
-    %>
-    <div class="product-card">
-        <%-- Using Scriptlet Expressions for output, or EL if stored in request scope --%>
-        <h3><%= product.getName() %></h3>
-        <p><%= product.getDescription() %></p>
-        <p><strong>Price: \$<%= String.format("%.2f", product.getPrice()) %></strong></p>
-
-        <%-- Form to send product ID to a new Cart JSP --%>
-        <form action="cart.jsp" method="post" style="display:inline;">
-            <input type="hidden" name="productId" value="<%= product.getId() %>">
-            <input type="hidden" name="action" value="add">
-            <input type="number" name="quantity" value="1" min="1" style="width: 50px;">
-            <button type="submit">Add to Cart</button>
-        </form>
+<div class="container">
+    <div class="welcome-header">
+        <h1>Welcome, <%= user.getUsername() %>!</h1>
+        <h2>Today's Menu</h2>
     </div>
-    <hr>
-    <%
-        } // End of the for loop
-    %>
-</div>
-<p><a href="orderHistory.jsp">My Order History</a> | <a href="logout.jsp">Logout</a></p>
 
-<p><a href="login.jsp">Logout</a></p>
+    <form action="cart.jsp" method="post" id="menu-form">
+        <input type="hidden" name="action" value="batchUpdate">
+
+        <div class="product-list">
+            <% for (Product product : products) { %>
+            <div class="product-card">
+
+                <div class="product-card-body">
+                    <h3><%= product.getName() %></h3>
+                    <p><%= product.getDescription() %></p>
+                </div>
+
+                <div class="product-card-footer">
+                    <span class="product-price">$<%= String.format("%.2f", product.getPrice()) %></span>
+
+                    <div class="form-group">
+                        <label for="quantity-<%= product.getId() %>">Qty:</label>
+                        <input type="number"
+                               id="quantity-<%= product.getId() %>"
+                               name="quantity_<%= product.getId() %>"
+                               value="0"
+                               min="0"
+                               max="99"
+                               class="form-group input">
+                    </div>
+
+                </div>
+            </div>
+            <% } // End product loop %>
+        </div>
+
+        <div class="cart-submit-bar">
+            <button type="submit" class="btn">Add Selections to Cart</button>
+        </div>
+
+    </form>
+</div>
 </body>
 </html>

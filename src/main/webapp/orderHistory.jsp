@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%-- Import classes --%>
+<%-- Import classes (Using your package) --%>
 <%@ page import="org.foodapp.foodapp.User" %>
 <%@ page import="org.foodapp.foodapp.Order" %>
 <%@ page import="org.foodapp.foodapp.OrderDAO" %>
@@ -11,23 +11,21 @@
     // 1. Customer Authentication Check
     User user = (User) session.getAttribute("user");
     if (user == null || "ADMIN".equals(user.getRole())) {
-        // Redirect if not logged in or if they are an admin
         response.sendRedirect("login.jsp");
         return;
     }
 
     // 2. Get Data
     OrderDAO orderDAO = new OrderDAO();
-    // Use the new method to get orders for THIS user
     List<Order> orders = orderDAO.getOrdersByUserId(user.getId());
-
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Order History</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Order History</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,40 +37,49 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/history.css">
 </head>
 <body>
-<h1>My Order History</h1>
-<p>Welcome, <%= user.getUsername() %>! | <a href="menu.jsp">Back to Menu</a> | <a href="logout.jsp">Logout</a></p>
 
-<h2>Your Past Orders</h2>
+    <div class="container">
+        <div class="history-header">
+            <h1>My Order History</h1>
+            <div>
+                <a href="menu.jsp" class="btn">Back to Menu</a>
+                <a href="login.jsp" class="btn">Logout</a>
+            </div>
+        </div>
 
-<% if (orders.isEmpty()) { %>
-<p>You have not placed any orders yet.</p>
-<% } else { %>
-<table>
-    <thead>
-    <tr>
-        <th>Order ID</th>
-        <th>Date</th>
-        <th>Total</th>
-        <th>Status</th>
-        <th>Details</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% for (Order order : orders) { %>
-    <tr>
-        <td><%= order.getId() %></td>
-        <td><%= sdf.format(order.getOrderDate()) %></td>
-        <td>$<%= String.format("%.2f", order.getTotalAmount()) %></td>
-        <td><%= order.getStatus() %></td>
-        <td>
-            <%-- This links to a new page we will create --%>
-            <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>">View Details</a>
-        </td>
-    </tr>
-    <% } // End for loop %>
-    </tbody>
-</table>
-<% } // End else %>
+        <p>Welcome, <%= user.getUsername() %>!</p>
+
+        <h2>Your Past Orders</h2>
+
+        <% if (orders.isEmpty()) { %>
+            <p>You have not placed any orders yet.</p>
+        <% } else { %>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (Order order : orders) { %>
+                <tr>
+                    <td><%= order.getId() %></td>
+                    <td><%= sdf.format(order.getOrderDate()) %></td>
+                    <td>$<%= String.format("%.2f", order.getTotalAmount()) %></td>
+                    <td><%= order.getStatus() %></td>
+                    <td>
+                        <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>">View Details</a>
+                    </td>
+                </tr>
+                <% } // End for loop %>
+                </tbody>
+            </table>
+        <% } // End else %>
+    </div>
 
 </body>
 </html>
