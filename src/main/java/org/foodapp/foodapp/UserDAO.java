@@ -8,11 +8,7 @@ import java.sql.SQLException;
 
 public class UserDAO {
 
-    /**
-     * Finds a user by their username.
-     * @param username The username to search for.
-     * @return The User object if found, otherwise null.
-     */
+
     public User getUserByUsername(String username) {
         // SQL query to find the user
         String sql = "SELECT * FROM users WHERE username = ?";
@@ -35,6 +31,7 @@ public class UserDAO {
                     user.setEmail(rs.getString("email"));
                     user.setPasswordHash(rs.getString("passwordHash"));
                     user.setRole(rs.getString("role"));
+                    user.setAddress(rs.getString("address"));
                 }
             }
         } catch (SQLException e) {
@@ -57,7 +54,7 @@ public class UserDAO {
         }
 
         // SQL query to insert a new user
-        String sql = "INSERT INTO users (username, email, passwordHash, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, email, passwordHash, role, Address) VALUES (?, ?, ?, ?,?)";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -70,6 +67,7 @@ public class UserDAO {
             // We are storing plain text for this example ONLY.
             ps.setString(3, user.getPasswordHash());
             ps.setString(4, "CUSTOMER"); // Default role
+            ps.setString(5, user.getAddress());
 
             // Execute the insert
             int rowsAffected = ps.executeUpdate();
@@ -103,5 +101,63 @@ public class UserDAO {
 
         System.out.println("DAO: Login failed for " + username);
         return null;
+    }
+    public boolean updateUserAddress(int userId, String newAddress) {
+        String sql = "UPDATE users SET address = ? WHERE id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newAddress);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0; // Will be true if 1 row was changed
+
+        } catch (SQLException e) {
+            System.err.println("Error updating user address: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updateUserPassword(int userId, String currentPassword, String newPassword) {
+        String sqlSelect = "SELECT passwordHash FROM users WHERE id = ?";
+        String sqlUpdate = "UPDATE users SET passwordHash = ? WHERE id = ?";
+
+        try (Connection conn = DBUtil.getConnection()) {
+
+            // 1. First, check if the CURRENT password is correct
+            String storedPasswordHash = null;
+            try (PreparedStatement psSelect = conn.prepareStatement(sqlSelect)) {
+                psSelect.setInt(1, userId);
+                try (ResultSet rs = psSelect.executeQuery()) {
+                    if (rs.next()) {
+                        storedPasswordHash = rs.getString("passwordHash");
+                    }
+                }
+            }
+
+            // (In a real app, we would hash 'currentPassword' and compare the hashes)
+            // For our app, we just compare plain text:
+            if (storedPasswordHash == null || !storedPasswordHash.equals(currentPassword)) {
+                System.out.println("DAO: Password update failed. Current password incorrect.");
+                return false; // Current password did not match
+            }
+
+            // 2. If it was correct, update to the NEW password
+            try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
+                // (In a real app, we would hash 'newPassword' before storing)
+                psUpdate.setString(1, newPassword);
+                psUpdate.setInt(2, userId);
+
+                int rowsAffected = psUpdate.executeUpdate();
+                return rowsAffected > 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error updating user password: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

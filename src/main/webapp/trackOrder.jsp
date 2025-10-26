@@ -16,6 +16,7 @@
         return;
     }
 
+
     // 2. Get Order ID and Fetch Data
     Order order = null;
     List<OrderItem> items = null;
@@ -70,18 +71,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Your Order - Food Ordering App</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="assets/css/track.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/track.css">
 </head>
 <body>
     <div class="track-container">
         <header class="track-header">
+            <% if("ADMIN".equals(user.getRole())) { %>
+            <a href="adminDashboard.jsp" class="btn">Back to Dashboard</a>
+            <% } %>
             <h1>Track Order #<%= orderId %></h1>
             <a href="orderHistory.jsp" class="btn-back">Back to My Orders</a>
+            <a href="profile.jsp">My Profile</a>
         </header>
 
         <div class="status-card">

@@ -37,6 +37,7 @@
     order.setUserId(user.getId());
     order.setOrderDate(new Date()); // Set current date
     order.setStatus("Pending");
+    order.setDeliveryAddress(user.getAddress());
 
     // Create the list of OrderItems
     List<OrderItem> orderItems = new ArrayList<>();

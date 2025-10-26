@@ -1,383 +1,93 @@
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/*========================================================================
+    Admin Page Styles (v2)
+========================================================================*/
+
+:root {
+    --admin-primary: #487eb0;
+    --admin-dark: #273c75;
+    --admin-light-bg: #f0f3f5;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background-color: var(--admin-light-bg);
+}
+
+.admin-layout {
+    display: flex;
     min-height: 100vh;
-    padding: 20px;
-    color: #333;
 }
 
-/* Dashboard Container */
-.admin-dashboard {
-    max-width: 1400px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    animation: fadeIn 0.5s ease-out;
+.admin-sidebar {
+    width: 260px;
+    background: var(--admin-dark);
+    color: var(--white);
+    padding: calc(var(--spacing-unit) * 1.5);
+    display: flex;
+    flex-direction: column;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.admin-sidebar-header {
+    text-align: center;
+    margin-bottom: calc(var(--spacing-unit) * 2);
 }
 
-/* Dashboard Header */
-.dashboard-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 30px 40px;
-    color: white;
+.admin-sidebar-header h1 {
+    color: var(--white);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.admin-sidebar-header .logo-accent {
+    color: var(--primary-accent);
+}
+
+.admin-nav {
+    flex-grow: 1;
+}
+
+.admin-nav a {
+    display: block;
+    color: var(--light-shade);
+    padding: var(--spacing-unit);
+    border-radius: var(--border-radius);
+    margin-bottom: calc(var(--spacing-unit) * 0.5);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--transition-speed) ease;
+}
+
+.admin-nav a:hover, .admin-nav a.active {
+    background: var(--admin-primary);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.admin-user-info {
+    border-top: 1px solid #40739e;
+    padding-top: var(--spacing-unit);
+    font-size: 0.9rem;
+}
+
+.admin-main {
+    flex-grow: 1;
+    padding: calc(var(--spacing-unit) * 3);
+}
+
+.admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    margin-bottom: calc(var(--spacing-unit) * 2);
 }
 
-.admin-dashboard > h1 {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 30px 40px;
-    color: white;
-    margin: 0;
-    font-size: 32px;
-    font-weight: 600;
+.admin-header h1 {
+    font-size: 2.5rem;
 }
 
-.admin-dashboard > p {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 0 40px 30px 40px;
-    color: white;
-    margin: 0;
+.action-cell form {
     display: flex;
-    align-items: center;
-    gap: 15px;
+    gap: var(--spacing-unit);
 }
 
-.dashboard-header h1 {
-    margin: 0;
-    font-size: 32px;
-    font-weight: 600;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 16px;
-}
-
-.user-info strong {
-    font-weight: 600;
-}
-
-/* Logout Button */
-.logout-btn,
-.admin-dashboard > p > a {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.logout-btn:hover,
-.admin-dashboard > p > a:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Orders Section */
-.orders-section {
-    padding: 40px;
-}
-
-.admin-dashboard > h2 {
-    padding: 40px 40px 20px 40px;
-    color: #333;
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.orders-section h2 {
-    color: #333;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 25px;
-}
-
-/* No Orders Message */
-.no-orders,
-.admin-dashboard > p:not([style]) {
-    text-align: center;
-    padding: 60px 20px;
-    color: #999;
-    font-size: 16px;
-}
-
-/* Table Container */
-.table-container {
-    overflow-x: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Table Styles */
-table,
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
-
-thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-thead th {
-    color: white;
-    font-weight: 600;
-    text-align: left;
-    padding: 16px;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-tbody tr {
-    border-bottom: 1px solid #e0e0e0;
-    transition: background-color 0.2s ease;
-}
-
-tbody tr:hover {
-    background-color: #f8f9fa;
-}
-
-tbody tr:last-child {
-    border-bottom: none;
-}
-
-tbody td {
-    padding: 16px;
-    font-size: 14px;
-    color: #555;
-}
-
-/* Status Colors */
-tbody td:nth-child(5) {
-    font-weight: 500;
-}
-
-tbody tr:has(td:nth-child(5):contains("Preparing")) td:nth-child(5) {
-    color: #f39c12;
-}
-
-tbody tr:has(td:nth-child(5):contains("Delivered")) td:nth-child(5) {
-    color: #27ae60;
-}
-
-tbody tr:has(td:nth-child(5):contains("Cancelled")) td:nth-child(5) {
-    color: #e74c3c;
-}
-
-/* Action Cell */
-.action-cell,
-tbody td:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-/* Status Form */
-.status-form,
-tbody td:last-child form {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    width: 100%;
-}
-
-/* Status Select */
-.status-select,
-select[name="newStatus"] {
-    padding: 8px 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 13px;
-    color: #555;
-    background-color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex: 1;
-    min-width: 140px;
-}
-
-.status-select:focus,
-select[name="newStatus"]:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Buttons */
-.btn-update,
-button[type="submit"] {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-update:hover,
-button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-update:active,
-button[type="submit"]:active {
-    transform: translateY(0);
-}
-
-.btn-view,
-tbody td:last-child a {
-    display: inline-block;
-    padding: 8px 16px;
-    background: #f8f9fa;
-    color: #667eea;
-    border: 2px solid #667eea;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-align: center;
-}
-
-.btn-view:hover,
-tbody td:last-child a:hover {
-    background: #667eea;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .admin-dashboard {
-        border-radius: 0;
-    }
-
-    body {
-        padding: 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-header {
-        padding: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .admin-dashboard > h1 {
-        padding: 20px;
-        font-size: 24px;
-    }
-
-    .admin-dashboard > p {
-        padding: 0 20px 20px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .dashboard-header h1 {
-        font-size: 24px;
-    }
-
-    .orders-section,
-    .admin-dashboard > h2 {
-        padding: 20px;
-    }
-
-    .table-container {
-        border-radius: 0;
-    }
-
-    /* Stack table cells on mobile */
-    table {
-        font-size: 13px;
-    }
-
-    thead th,
-    tbody td {
-        padding: 12px 8px;
-    }
-
-    .status-select,
-    select[name="newStatus"] {
-        min-width: 110px;
-        font-size: 12px;
-    }
-
-    .btn-update,
-    .btn-view,
-    button[type="submit"],
-    tbody td:last-child a {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 600px) {
-    /* Make action cell items full width on very small screens */
-    .action-cell,
-    tbody td:last-child {
-        min-width: 200px;
-    }
-
-    .status-form,
-    tbody td:last-child form {
-        flex-wrap: wrap;
-    }
-
-    .status-select,
-    select[name="newStatus"] {
-        flex: 1 1 100%;
-        min-width: 100%;
-    }
-
-    .btn-update,
-    button[type="submit"] {
-        flex: 1 1 100%;
-    }
-
-    .btn-view,
-    tbody td:last-child a {
-        width: 100%;
-    }
+.action-cell .form-control {
+    max-width: 150px;
 }

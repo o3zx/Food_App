@@ -32,8 +32,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/history.css">
 </head>
 <body>
@@ -43,6 +42,7 @@
             <h1>My Order History</h1>
             <div>
                 <a href="menu.jsp" class="btn">Back to Menu</a>
+                <a href="profile.jsp">My Profile</a>
                 <a href="login.jsp" class="btn">Logout</a>
             </div>
         </div>

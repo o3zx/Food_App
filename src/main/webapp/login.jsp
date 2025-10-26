@@ -1,37 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%-- Import DAO and Model --%>
 <%@ page import="org.foodapp.foodapp.UserDAO" %>
 <%@ page import="org.foodapp.foodapp.User" %>
 
 <%
-    // --- LOGIN LOGIC ---
     String errorMessage = null;
-
-    // Check if the form was submitted (by checking the 'action' parameter)
     if ("login".equals(request.getParameter("action"))) {
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
         UserDAO userDAO = new UserDAO();
         User user = userDAO.authenticateUser(username, password);
-
         if (user != null) {
-            // SUCCESS: Create session
             session.setAttribute("user", user);
             session.setAttribute("loggedIn", true);
-
-            // --- ROLE-BASED REDIRECT ---
             if ("ADMIN".equals(user.getRole())) {
                 response.sendRedirect("adminDashboard.jsp");
             } else {
                 response.sendRedirect("menu.jsp");
             }
-            return; // Stop processing
-
+            return;
         } else {
-            // FAILURE
             errorMessage = "Invalid username or password.";
         }
     }
@@ -42,50 +29,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Food Ordering App</title>
-    <link rel="stylesheet" href="assets/css/login.css">
+    <title>Login - FoodApp</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/auth.css">
 </head>
-<body>
-    <div class="login-container">
+<body class="auth-body">
 
-        <h1>Login to Food App</h1>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to continue your delicious journey.</p>
+            </div>
 
-        <%-- Display error message if present --%>
-        <%
-            if (errorMessage != null) {
-                out.println("<p class='message-error'>" + errorMessage + "</p>");
-            }
-        %>
+            <% if (errorMessage != null) { %>
+                <div class="alert alert-danger" role="alert">
+                    <%= errorMessage %>
+                </div>
+            <% } %>
+            <%
+                String success = request.getParameter("success");
+                if (success != null) {
+            %>
+                <div class="alert alert-success" role="alert">
+                    <%= success %>
+                </div>
+            <% } %>
 
-        <%-- Display success message from registration --%>
-        <%
-            String success = request.getParameter("success");
-            if (success != null) {
-                out.println("<p class='message-success'>" + success + "</p>");
-            }
-        %>
+            <form action="login.jsp" method="post" class="auth-form">
+                <input type="hidden" name="action" value="login">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
 
-        <%-- The form now submits to ITSELF --%>
-      <form action="login.jsp" method="post" class="login-form">
-          <input type="hidden" name="action" value="login">
-
-          <div class="form-group">
-              <label for="username">Username:</label>
-              <input type="text" id="username" name="username" required>
-          </div>
-
-          <div class="form-group">
-              <label for="password">Password:</label>
-              <input type="password" id="password" name="password" required>
-          </div>
-
-          <button type="submit" class="btn-login">Login</button>
-      </form>
-
-        <div class="login-links">
-            <p>Test credentials: (customer) testuser/pass | (admin) admin/adminpass</p>
-            <p>Don't have an account? <a href="register.jsp">Register here</a></p>
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="register.jsp">Sign up</a></p>
+            </div>
         </div>
     </div>
+
 </body>
 </html>

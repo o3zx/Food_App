@@ -42,12 +42,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Details #<%= orderId %> - Food Ordering App</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="assets/css/orderDetails.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/orderDetails.css">
 </head>
 <body>
     <div class="details-container">
@@ -66,6 +65,9 @@
                 <% } %>
             </div>
             <nav class="header-actions">
+                <% if("ADMIN".equals(user.getRole())) { %>
+                <a href="adminDashboard.jsp" class="btn">Back to Dashboard</a>
+                <% } %>
                 <a href="trackOrder.jsp?orderId=<%= orderId %>" class="btn btn-track">📍 Track Order</a>
             </nav>
         </header>

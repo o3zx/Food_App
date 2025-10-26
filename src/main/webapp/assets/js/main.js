@@ -32,3 +32,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+/* ADD THIS TO THE BOTTOM OF main.js */
+
+// Find the password change form
+const passwordForm = document.getElementById('passwordForm');
+
+if (passwordForm) {
+    passwordForm.addEventListener('submit', function(event) {
+        // Get the password fields
+        const newPass = document.getElementById('newPassword');
+        const confirmPass = document.getElementById('confirmPassword');
+
+        // Clear any old errors
+        clearErrors(); // We reuse the function from the registration form
+
+        if (newPass.value !== confirmPass.value) {
+            // Passwords don't match
+            event.preventDefault(); // Stop the form from submitting
+
+            // Show an error message
+            showError(confirmPass, 'New passwords do not match!');
+        }
+
+        if (newPass.value.length < 6) {
+            event.preventDefault();
+            showError(newPass, 'Password must be at least 6 characters long.');
+        }
+    });
+}

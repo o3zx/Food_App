@@ -10,6 +10,7 @@
     String email = request.getParameter("email");
     String password = request.getParameter("password");
     String confirmPassword = request.getParameter("confirmPassword");
+    String address = request.getParameter("address");
 
     // --- 2. Server-Side Validation ---
 
@@ -19,6 +20,11 @@
         password == null || password.isEmpty()) {
 
         response.sendRedirect("register.jsp?error=All fields are required.");
+        return;
+    }
+    // validate Address
+    if (address == null || address.trim().isEmpty()) {
+        response.sendRedirect("register.jsp?error=Address is required.");
         return;
     }
 
@@ -49,6 +55,8 @@
         // Set the password hash (using plain text for this mock)
         newUser.setPasswordHash(password);
 
+        // set address
+        newUser.setAddress(address);
         // The DAO will set the ID and Role automatically
 
         // --- FIX 3 ---

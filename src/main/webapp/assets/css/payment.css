@@ -1,56 +1,58 @@
-/* For payment.jsp */
+/*========================================================================
+    Payment Page Styles
+========================================================================*/
+
+.payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
 
 .payment-summary {
     text-align: center;
-    font-family: var(--font-heading);
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+}
+
+.payment-summary .total-amount {
     color: var(--primary-color);
-    margin: 20px 0;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
 }
 
 .payment-selection {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: var(--spacing-unit);
 }
 
 .payment-option {
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: 20px;
+    padding: calc(var(--spacing-unit) * 1.5);
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: var(--spacing-unit);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-speed) ease;
 }
 
 .payment-option:hover {
-    background-color: var(--secondary-color);
-}
-
-/* This is a modern CSS selector that applies style when the radio button inside is checked */
-.payment-option:has(input[type="radio"]:checked) {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.3); /* Orange glow */
 }
 
 .payment-option input[type="radio"] {
-    /* Style the radio button itself */
     width: 20px;
     height: 20px;
     accent-color: var(--primary-color);
 }
 
 .payment-option label {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    font-size: 1.1rem;
     cursor: pointer;
-    /* Remove default margin */
     margin-bottom: 0;
+}
+
+.btn-confirm-payment {
+    width: 100%;
+    margin-top: calc(var(--spacing-unit) * 1.5);
 }

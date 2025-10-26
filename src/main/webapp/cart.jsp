@@ -10,14 +10,10 @@
 <%@ page import="java.util.Enumeration" %>
 
 <%
-    // 1. Authentication Check
+    // 1. Get user (if they are logged in). This can be null for guests.
     User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
 
-    // 2. Retrieve Cart
+    // 2. Retrieve Cart (Works for guests and users)
     @SuppressWarnings("unchecked")
     Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
     if (cart == null) {
@@ -30,9 +26,17 @@
     ProductDAO productDAO = new ProductDAO();
 
     // ---------------------------------------------------------------
-    // 4. NEW LOGIC BLOCK TO HANDLE BATCH UPDATES FROM MENU
+    // 4. LOGIC BLOCK TO HANDLE BATCH UPDATES FROM MENU
     // ---------------------------------------------------------------
     if ("batchUpdate".equals(action)) {
+
+        // --- FIX: THIS IS THE "GATE" ---
+        // If a guest (user == null) tries to add items, redirect them to login.
+        if (user == null) {
+            response.sendRedirect("login.jsp?error=Please log in to add items to your cart.");
+            return;
+        }
+        // --- END FIX ---
 
         // Get all parameters from the form
         Enumeration<String> paramNames = request.getParameterNames();
@@ -40,54 +44,48 @@
         while (paramNames.hasMoreElements()) {
             String paramName = paramNames.nextElement();
 
-            // Check if this is one of our quantity inputs
             if (paramName.startsWith("quantity_")) {
                 try {
-                    // Get the quantity value
                     int quantity = Integer.parseInt(request.getParameter(paramName));
-
-                    // Get the product ID from the name (e.g., "quantity_101" -> 101)
                     int productId = Integer.parseInt(paramName.substring(9));
 
                     if (quantity > 0) {
-                        // If quantity is > 0, add/update it in the cart
                         if (cart.containsKey(productId)) {
-                            // Already in cart, just update quantity
                             cart.get(productId).setQuantity(quantity);
                         } else {
-                            // Not in cart, fetch product and add new CartItem
                             Product product = productDAO.getProductById(productId);
                             if (product != null) {
                                 cart.put(productId, new CartItem(product, quantity));
                             }
                         }
                     } else if (quantity == 0) {
-                        // If quantity is 0, remove it from the cart
                         cart.remove(productId);
                     }
-
                 } catch (NumberFormatException e) {
                     System.out.println("Error parsing batch update: " + e.getMessage());
                 }
             }
         }
-
-        // After processing, redirect to the cart page to view the result
         response.sendRedirect("cart.jsp");
         return;
     }
 
-    // --- (Your old logic for "add" and "remove" from the cart page itself) ---
-    // This logic will still work for changes made ON the cart page.
-
+    // --- Logic for "remove" (Guests can also remove items) ---
     String productIdStr = request.getParameter("productId");
-    if ("add".equals(action) && productIdStr != null) {
-        // ... your existing logic for adding 1
-    }
     if ("remove".equals(action) && productIdStr != null) {
-        // ... your existing logic for removing
+        try {
+            int productId = Integer.parseInt(productIdStr);
+            cart.remove(productId);
+
+            // Redirect to avoid re-processing on refresh
+            response.sendRedirect("cart.jsp");
+            return;
+        } catch (NumberFormatException e) {
+            // Handle error
+        }
     }
 
+    // 5. Calculate Total (Do this *after* all logic)
     double cartTotal = 0.0;
     for (CartItem item : cart.values()) {
         cartTotal += item.getTotalPrice();
@@ -100,62 +98,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" href="assets/css/cart.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/cart.css">
 </head>
 <body>
-    <div class="cart-container">
-        <header class="cart-header">
-            <h1>Shopping Cart</h1>
-            <a href="menu.jsp" class="btn-continue">Continue Shopping</a>
-        </header>
 
-        <% if (cart.isEmpty()) { %>
-            <div class="empty-cart">
-                <p>Your cart is empty.</p>
-                <a href="menu.jsp" class="btn-shop">Start Shopping</a>
-            </div>
+<header class="main-header">
+    <a href="menu.jsp" class="logo">FoodApp</a>
+    <nav>
+        <a href="cart.jsp">🛒 Cart</a>
+        <% if (user != null) { %>
+        <a href="orderHistory.jsp">My Orders</a>
+        <a href="profile.jsp">My Profile</a>
+        <a href="logout.jsp">Logout</a>
         <% } else { %>
-            <div class="cart-content">
-                <div class="table-container">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% for (CartItem item : cart.values()) { %>
-                            <tr>
-                                <td class="item-name"><%= item.getProduct().getName() %></td>
-                                <td class="item-price">$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
-                                <td class="item-quantity"><%= item.getQuantity() %></td>
-                                <td class="item-subtotal">$<%= String.format("%.2f", item.getTotalPrice()) %></td>
-                                <td class="item-action">
-                                    <form action="cart.jsp" method="post" class="remove-form">
-                                        <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
-                                        <input type="hidden" name="action" value="remove">
-                                        <button type="submit" class="btn-remove">Remove</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="cart-summary">
-                    <div class="total-section">
-                        <h3>Cart Total:</h3>
-                        <p class="total-amount">$<%= String.format("%.2f", cartTotal) %></p>
-                    </div>
-                    <a href="checkout.jsp" class="btn-checkout">Proceed to Checkout</a>
-                </div>
-            </div>
+        <a href="login.jsp" class="btn">Login / Register</a>
         <% } %>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="history-header"> <h1>Shopping Cart</h1>
+        <a href="menu.jsp" class="btn">Continue Shopping</a>
     </div>
+
+    <% if (cart.isEmpty()) { %>
+    <div class="card" style="padding: 40px; text-align: center;">
+        <h2>Your cart is empty.</h2>
+        <p style="margin-top: 10px;">Looks like you haven't added any items yet.</p>
+        <a href="menu.jsp" class="btn" style="margin-top: 20px;">Start Shopping</a>
+    </div>
+    <% } else { %>
+    <div class="cart-container">
+        <div class="cart-items">
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (CartItem item : cart.values()) { %>
+                <tr>
+                    <td><%= item.getProduct().getName() %></td>
+                    <td>$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
+                    <td><%= item.getQuantity() %></td>
+                    <td>$<%= String.format("%.2f", item.getTotalPrice()) %></td>
+                    <td>
+                        <form action="cart.jsp" method="post">
+                            <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
+                            <input type="hidden" name="action" value="remove">
+                            <button type="submit" class="btn-danger" style="padding: 8px 12px; width: auto;">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cart-summary">
+            <h2>Cart Summary</h2>
+            <div class="cart-summary-row cart-summary-total">
+                <span>Total:</span>
+                <span>$<%= String.format("%.2f", cartTotal) %></span>
+            </div>
+
+            <% if (user != null) { %>
+            <a href="checkout.jsp" class="btn" style="width: 100%;">Proceed to Checkout</a>
+            <% } else { %>
+            <a href="login.jsp?error=Please log in to check out." class="btn" style="width: 100%;">Login to Check Out</a>
+            <% } %>
+
+        </div>
+    </div>
+    <% } %>
+</div>
 </body>
 </html>

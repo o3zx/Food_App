@@ -7,6 +7,7 @@ public class Order {
     private Date orderDate;
     private double totalAmount;
     private String status;
+    private String deliveryAddress;
 
 
     public Order() {}
@@ -25,4 +26,6 @@ public class Order {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getDeliveryAddress() { return deliveryAddress; }
+    public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
 }

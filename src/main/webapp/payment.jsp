@@ -40,9 +40,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/login.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/payment.css">
 </head>
 <body>

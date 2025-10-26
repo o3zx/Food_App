@@ -6,13 +6,15 @@ public class User {
     private String passwordHash;
     private String email;
     private String role;
+    private String Address;
     public User() {}
-    public User(int id, String username, String passwordHash, String email, String role) {
+    public User(int id, String username, String passwordHash, String email, String role, String Address) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.email = email;
         this.role = role;
+        this.Address = Address;
     }
     public int getId() {
         return id;
@@ -44,4 +46,6 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+    public String getAddress() { return  Address; }
+    public void setAddress(String Address) { this.Address = Address; }
 }
