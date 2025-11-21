@@ -5,7 +5,6 @@ WORKDIR /app
 # Copy project files
 COPY pom.xml .
 COPY src ./src
-COPY webapp ./webapp
 
 # Build the project (skip tests to save time)
 RUN mvn clean package -DskipTests
