@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%-- Import classes --%>
+<%-- Import all necessary classes --%>
 <%@ page import="org.foodapp.foodapp.User" %>
+<%@ page import="org.foodapp.foodapp.UserDAO" %>
 <%@ page import="org.foodapp.foodapp.Order" %>
 <%@ page import="org.foodapp.foodapp.OrderDAO" %>
 <%@ page import="java.util.List" %>
@@ -19,7 +20,10 @@
     OrderDAO orderDAO = new OrderDAO();
     List<Order> orders = orderDAO.getAllOrders();
 
-    // Formatter for the date
+    // 3. Get all available drivers
+    UserDAO userDAO = new UserDAO();
+    List<User> drivers = userDAO.getUsersByRole("DRIVER");
+
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
 
@@ -28,79 +32,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Food Ordering App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <title>Admin Dashboard - Order Management</title>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/adminDashboard.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="dashboard-header">
-        <h1>Admin Dashboard (Orders)</h1>
-        <div>
-            <a href="adminManageProducts.jsp" class="btn">Manage Products</a>
-            <a href="login.jsp" class="btn">Logout</a>
-        </div>
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <a href="adminDashboard.jsp" class="main-header-logo">FoodApp Admin</a>
+        <nav class="main-header-nav">
+            <a href="adminDashboard.jsp" class="active">Orders</a>
+            <a href="adminManageProducts.jsp">Products</a>
+            <a href="logout">Logout</a>
+        </nav>
     </div>
+</header>
 
-</div>
+<!-- Main Content -->
+<main class="admin-main">
+    <div class="container">
 
-  <div class="admin-dashboard">
-      <header class="dashboard-header">
-          <h1>Admin Dashboard</h1>
-          <div class="user-info">
-              <span>Welcome, <strong><%= user.getUsername() %></strong>!</span>
-              <a href="login.jsp" class="logout-btn">Logout</a>
-          </div>
-      </header>
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-header-content">
+                <h1 class="page-title">Order Management</h1>
+                <p class="page-subtitle">View and manage all customer orders</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <a href="adminManageProducts.jsp" class="btn btn-outline">
+                    <span class="btn-icon">🍔</span>
+                    Manage Products
+                </a>
+            </div>
+        </div>
 
-      <section class="orders-section">
-          <h2>All Orders</h2>
+        <!-- Orders Section -->
+        <div class="orders-section">
+            <div class="section-header">
+                <h2 class="section-title">All Orders (<%= orders.size() %>)</h2>
+            </div>
 
-          <% if (orders.isEmpty()) { %>
-              <p class="no-orders">No orders have been placed yet.</p>
-          <% } else { %>
-              <div class="table-container">
-                  <table class="orders-table">
-                <thead>
+            <% if (orders.isEmpty()) { %>
+            <div class="empty-state card">
+                <div class="empty-state-icon">📦</div>
+                <h3 class="empty-state-title">No Orders Yet</h3>
+                <p class="empty-state-text">Orders will appear here once customers start placing them.</p>
+            </div>
+            <% } else { %>
+            <div class="table-wrapper">
+                <table class="styled-table orders-table">
+                    <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>User ID</th>
-                        <th>Date</th>
-                        <th>Total</th>
+                        <th>Customer ID</th>
+                        <th>Date & Time</th>
+                        <th>Total Amount</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <% for (Order order : orders) { %>
-                    <tr>
-                        <td><%= order.getId() %></td>
-                        <td><%= order.getUserId() %></td>
-                        <td><%= sdf.format(order.getOrderDate()) %></td>
-                        <td>$<%= String.format("%.2f", order.getTotalAmount()) %></td>
-                        <td><%= order.getStatus() %></td>
+                    <tr class="order-row">
                         <td>
-                            <form action="updateOrderStatus.jsp" method="post" style="display:inline;">
-                                <input type="hidden" name="orderId" value="<%= order.getId() %>">
-                                <select name="newStatus">
-                                    <option value="Preparing" <% if ("Preparing".equals(order.getStatus())) out.print("selected"); %>>Preparing</option>
-                                    <option value="Out for Delivery" <% if ("Out for Delivery".equals(order.getStatus())) out.print("selected"); %>>Out for Delivery</option>
-                                    <option value="Delivered" <% if ("Delivered".equals(order.getStatus())) out.print("selected"); %>>Delivered</option>
-                                    <option value="Cancelled" <% if ("Cancelled".equals(order.getStatus())) out.print("selected"); %>>Cancelled</option>
-                                </select>
-                                <button type="submit">Update</button>
-                            </form>
-                            <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>">View Details</a>
+                            <span class="order-id">#<%= order.getId() %></span>
+                        </td>
+                        <td>
+                            <span class="user-id">User <%= order.getUserId() %></span>
+                        </td>
+                        <td>
+                            <span class="order-date"><%= sdf.format(order.getOrderDate()) %></span>
+                        </td>
+                        <td>
+                            <span class="order-total">$<%= String.format("%.2f", order.getTotalAmount()) %></span>
+                        </td>
+                        <td>
+                                        <span class="status-badge status-<%= order.getStatus().toLowerCase().replace(" ", "-") %>">
+                                            <%= order.getStatus() %>
+                                        </span>
+                        </td>
+                        <td>
+                            <div class="action-cell">
+                                <%-- LOGIC FOR ACTIONS BASED ON STATUS --%>
+
+                                    <% if (order.getStatus().equals("Pending")) { %>
+                                    <form action="adminOrderAction" method="post" class="status-form">
+                                        <input type="hidden" name="action" value="assign"> <input type="hidden" name="orderId" value="<%= order.getId() %>">
+                                        <select name="driverId" required>
+                                            <option value="">-- Assign Driver --</option>
+                                            <% for (User driver : drivers) { %>
+                                            <option value="<%= driver.getId() %>"><%= driver.getUsername() %></option>
+                                            <% } %>
+                                        </select>
+                                        <button type="submit">Assign</button>
+                                    </form>
+
+                                <% } else if (order.getStatus().equals("Out for Delivery")) { %>
+                                <div class="driver-info">
+                                    <span class="driver-label">Driver ID: <%= order.getDriverId() %></span>
+                                </div>
+
+                                <% } else if (order.getStatus().equals("Delivered") || order.getStatus().equals("Cancelled")) { %>
+                                <div class="completed-actions">
+                                    <span class="status-label"><%= order.getStatus() %></span>
+                                    <form action="adminOrderAction" method="post" style="margin-top: 5px;">
+                                        <input type="hidden" name="action" value="delete"> <input type="hidden" name="orderId" value="<%= order.getId() %>">
+                                        <button type="submit" class="btn-danger"
+                                                style="padding: 5px 8px; font-size: 12px; width: auto;"
+                                                onclick="return confirm('Are you sure?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <% } else { %>
+                                <form action="updateOrderStatus.jsp" method="post" class="update-status-form">
+                                    <input type="hidden" name="orderId" value="<%= order.getId() %>">
+                                    <div class="status-select-group">
+                                        <select name="newStatus" class="form-select form-select-sm">
+                                            <option value="Preparing" <% if ("Preparing".equals(order.getStatus())) out.print("selected"); %>>Preparing</option>
+                                            <option value="Cancelled" <% if ("Cancelled".equals(order.getStatus())) out.print("selected"); %>>Cancelled</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                                    </div>
+                                </form>
+                                <% } %>
+
+                                <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>" class="btn btn-sm btn-outline view-details-btn">
+                                    View Details
+                                </a>
+                            </div>
                         </td>
                     </tr>
-                    <% } %>
-                </tbody>
-            </table>
-        <% } %>
+                    <% } // End for loop %>
+                    </tbody>
+                </table>
+            </div>
+            <% } // End else %>
+        </div>
+
     </div>
+</main>
+
 </body>
 </html>

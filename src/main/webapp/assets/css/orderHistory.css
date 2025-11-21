@@ -1,0 +1,285 @@
+/* ============================================
+   ORDER HISTORY PAGE - Customer Orders
+   ============================================ */
+
+/* Main Content Area */
+.history-main {
+    padding: var(--spacing-2xl) 0;
+    min-height: calc(100vh - 80px);
+}
+
+/* Active Nav Link */
+.main-header-nav a.active {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.page-header-content {
+    flex: 1;
+}
+
+.page-header-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.page-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.page-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin-bottom: 0;
+}
+
+.user-name {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.btn-icon {
+    margin-right: var(--spacing-xs);
+}
+
+/* Orders Section */
+.orders-section {
+    margin-top: var(--spacing-xl);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    max-width: 500px;
+    margin: var(--spacing-2xl) auto;
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.6;
+}
+
+.empty-state-title {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state-text {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Orders Stats */
+.orders-stats {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Table Wrapper */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Orders Table */
+.orders-table {
+    min-width: 800px;
+}
+
+.orders-table thead th {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-md);
+}
+
+.orders-table tbody td {
+    padding: var(--spacing-lg) var(--spacing-md);
+    vertical-align: middle;
+}
+
+.order-row:hover {
+    background-color: var(--color-background);
+}
+
+/* Table Cell Content */
+.order-id {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    font-family: monospace;
+    font-size: var(--font-size-base);
+}
+
+.order-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.order-total {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background-color: #FFF3E0;
+    color: #F57C00;
+}
+
+.status-preparing {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+.status-out-for-delivery {
+    background-color: #E8EAF6;
+    color: #5E35B1;
+}
+
+.status-delivered {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.status-cancelled {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .orders-table {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: 768px) {
+    .history-main {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .page-header-actions {
+        width: 100%;
+    }
+
+    .page-header-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .page-subtitle {
+        font-size: var(--font-size-sm);
+    }
+
+    .orders-stats {
+        justify-content: center;
+    }
+
+    .table-wrapper {
+        margin: 0 calc(-1 * var(--container-padding));
+        border-radius: 0;
+    }
+
+    .orders-table {
+        min-width: 600px;
+    }
+
+    .orders-table thead th,
+    .orders-table tbody td {
+        padding: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .empty-state {
+        padding: var(--spacing-2xl) var(--spacing-md);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+    }
+
+    .stat-card {
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .stat-value {
+        font-size: var(--font-size-2xl);
+    }
+
+    .orders-table {
+        font-size: var(--font-size-sm);
+    }
+
+    .order-total {
+        font-size: var(--font-size-base);
+    }
+}

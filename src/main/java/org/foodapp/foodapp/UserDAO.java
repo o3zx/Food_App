@@ -1,10 +1,12 @@
 package org.foodapp.foodapp;
-
-import org.foodapp.foodapp.util.DBUtil; // Import our new utility
+import org.mindrot.jbcrypt.BCrypt;
+import org.foodapp.foodapp.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
 
@@ -53,20 +55,17 @@ public class UserDAO {
             return false; // Registration failed: Username taken
         }
 
-        // SQL query to insert a new user
         String sql = "INSERT INTO users (username, email, passwordHash, role, Address) VALUES (?, ?, ?, ?,?)";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // Set the parameters for the query
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getEmail());
 
-            // !! IMPORTANT !! In a real app, HASH the password before this step!
-            // We are storing plain text for this example ONLY.
-            ps.setString(3, user.getPasswordHash());
-            ps.setString(4, "CUSTOMER"); // Default role
+            String HashedPassowrd = BCrypt.hashpw(user.getPasswordHash(), BCrypt.gensalt());
+            ps.setString(3, HashedPassowrd);
+            ps.setString(4, "CUSTOMER");
             ps.setString(5, user.getAddress());
 
             // Execute the insert
@@ -82,24 +81,16 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Authenticates a user.
-     * @param username The username.
-     * @param password The plain-text password.
-     * @return The User object if login is successful, otherwise null.
-     */
+
     public User authenticateUser(String username, String password) {
         User user = getUserByUsername(username);
 
-        // !! IMPORTANT !! This is NOT secure.
-        // A real app would hash the 'password' parameter and compare it to the
-        // stored 'passwordHash'. We are comparing plain text for this example.
-        if (user != null && user.getPasswordHash().equals(password)) {
-            System.out.println("DAO: Login success for " + username);
+        if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
+            System.out.println("DAO: Hashed Login success for " + username);
             return user;
         }
 
-        System.out.println("DAO: Login failed for " + username);
+        System.out.println("DAO: Hashed Login failed for " + username);
         return null;
     }
     public boolean updateUserAddress(int userId, String newAddress) {
@@ -126,7 +117,6 @@ public class UserDAO {
 
         try (Connection conn = DBUtil.getConnection()) {
 
-            // 1. First, check if the CURRENT password is correct
             String storedPasswordHash = null;
             try (PreparedStatement psSelect = conn.prepareStatement(sqlSelect)) {
                 psSelect.setInt(1, userId);
@@ -137,17 +127,16 @@ public class UserDAO {
                 }
             }
 
-            // (In a real app, we would hash 'currentPassword' and compare the hashes)
-            // For our app, we just compare plain text:
-            if (storedPasswordHash == null || !storedPasswordHash.equals(currentPassword)) {
+            if (storedPasswordHash == null || !BCrypt.checkpw(currentPassword, storedPasswordHash)) {
                 System.out.println("DAO: Password update failed. Current password incorrect.");
-                return false; // Current password did not match
+                return false;
             }
 
-            // 2. If it was correct, update to the NEW password
+
+            String newHashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
             try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
-                // (In a real app, we would hash 'newPassword' before storing)
-                psUpdate.setString(1, newPassword);
+                psUpdate.setString(1, newHashedPassword);
                 psUpdate.setInt(2, userId);
 
                 int rowsAffected = psUpdate.executeUpdate();
@@ -159,5 +148,31 @@ public class UserDAO {
             e.printStackTrace();
             return false;
         }
+    }
+    public List<User> getUsersByRole(String role) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE role = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, role);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // We can't use a helper here since we don't have one
+                    User user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    user.setAddress(rs.getString("address"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 }

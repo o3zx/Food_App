@@ -34,66 +34,134 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product</title>
+    <title>Edit Product - Admin Dashboard</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/login.css">
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/editProduct.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="login-container">
-        <div class="login-card"> <h1>Edit Product (ID: <%= product.getId() %>)</h1>
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <a href="adminDashboard.jsp" class="main-header-logo">FoodApp Admin</a>
+        <nav class="main-header-nav">
+            <a href="adminDashboard.jsp">Dashboard</a>
+            <a href="adminManageProducts.jsp" class="active">Products</a>
+            <a href="adminManageOrders.jsp">Orders</a>
+            <a href="logout">Logout</a>
+        </nav>
+    </div>
+</header>
 
-            <form action="adminProductAction.jsp" method="post" enctype="multipart/form-data">
+<!-- Main Content -->
+<main class="admin-main">
+    <div class="container">
 
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Edit Product</h1>
+            <p class="page-subtitle">Update details for Product ID: <span class="product-id-badge">#<%= product.getId() %></span></p>
+        </div>
+
+        <!-- Edit Product Form Card -->
+        <div class="form-card card">
+            <form action="adminProductAction" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" value="<%= product.getId() %>">
 
-                <div class="form-group">
-                    <label for="name">Product Name:</label>
-                    <input type="text" id="name" name="name" value="<%= product.getName() %>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Product Name *</label>
+                        <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-input"
+                                value="<%= product.getName() %>"
+                                placeholder="e.g., Cheeseburger Deluxe"
+                                required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <input type="text" id="description" name="description" value="<%= product.getDescription() %>">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea
+                                id="description"
+                                name="description"
+                                class="form-textarea"
+                                rows="4"
+                                placeholder="Describe this delicious product..."><%= product.getDescription() %></textarea>
+                    </div>
                 </div>
 
-                <div class=("form-group")>
-                <label for="price">Price:</label>
-                <input type="number" id="price" name="price" value="<%= product.getPrice() %>" step="0.01" min="0" required>
+                <div class="form-row form-row-split">
+                    <div class="form-group">
+                        <label for="price" class="form-label">Price ($) *</label>
+                        <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                class="form-input"
+                                value="<%= product.getPrice() %>"
+                                step="0.01"
+                                min="0"
+                                placeholder="9.99"
+                                required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category *</label>
+                        <input
+                                type="text"
+                                id="category"
+                                name="category"
+                                class="form-input"
+                                value="<%= product.getCategory() %>"
+                                placeholder="e.g., Burgers, Pizza, Salads"
+                                required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imageFile" class="form-label">Product Image (Optional) <br>
+                            <span class="file-input-label">Choose a new image file</span></label>
+                        <div class="file-input-wrapper">
+                            <input
+                                    type="file"
+                                    id="imageFile"
+                                    name="imageFile"
+                                    class="form-input file-input"
+                                    accept="image/*">
+
+                        </div>
+                        <div class="current-image-info">
+                            <span class="current-image-label">Current image:</span>
+                            <span class="current-image-filename"><%= product.getImageUrl() %></span>
+                        </div>
+                        <span class="form-help">Leave empty to keep the current image</span>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="adminManageProducts.jsp" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                </div>
+
+            </form>
         </div>
 
-                <div class="form-group">
-                    <label for="imageFile">Upload New Image (Optional):</label>
-                    <input type="file" id="imageFile" name="imageFile" class="form-group input">
-                    <p style="font-size: 14px; margin-top: 8px;">
-                        Current file: <%= product.getImageUrl() %>
-                    </p>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <input type="text" id="category" name="category" value="<%= product.getCategory() %>" required>
-                </div>
-
-        <button type="submit" class="btn">Update Product</button>
-        </form>
-
-        <p style="text-align: center; margin-top: 20px;">
-            <a href="adminManageProducts.jsp">Cancel</a>
-        </p>
     </div>
-</div>
-</div>
+</main>
 
 </body>
 </html>

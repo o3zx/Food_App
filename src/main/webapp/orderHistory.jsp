@@ -22,64 +22,115 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Order History</title>
+    <title>Order History - FoodApp</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/history.css">
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/orderHistory.css">
 </head>
 <body>
 
+<!-- Main Header -->
+<header class="main-header">
     <div class="container">
-        <div class="history-header">
-            <h1>My Order History</h1>
-            <div>
-                <a href="menu.jsp" class="btn">Back to Menu</a>
-                <a href="profile.jsp">My Profile</a>
-                <a href="login.jsp" class="btn">Logout</a>
+        <a href="menu.jsp" class="main-header-logo">FoodApp</a>
+        <nav class="main-header-nav">
+            <a href="menu.jsp">Menu</a>
+            <a href="cart.jsp">🛒 Cart</a>
+            <a href="orderHistory.jsp" class="active">My Orders</a>
+            <a href="profile.jsp">Profile</a>
+            <a href="logout">Logout</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="history-main">
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <h1 class="page-title">My Order History</h1>
+                <p class="page-subtitle">Welcome back, <span class="user-name"><%= user.getUsername() %></span>! Track all your past orders here.</p>
+            </div>
+            <div class="page-header-actions">
+                <a href="menu.jsp" class="btn btn-primary">
+                    <span class="btn-icon">🍽️</span>
+                    Order Now
+                </a>
             </div>
         </div>
 
-        <p>Welcome, <%= user.getUsername() %>!</p>
+        <!-- Orders Section -->
+        <div class="orders-section">
 
-        <h2>Your Past Orders</h2>
+            <% if (orders.isEmpty()) { %>
+            <!-- Empty State -->
+            <div class="empty-state card">
+                <div class="empty-state-icon">📦</div>
+                <h3 class="empty-state-title">No Orders Yet</h3>
+                <p class="empty-state-text">You haven't placed any orders yet. Start exploring our delicious menu!</p>
+                <a href="menu.jsp" class="btn btn-primary">Browse Menu</a>
+            </div>
+            <% } else { %>
+            <!-- Orders Stats -->
+            <div class="orders-stats">
+                <div class="stat-card">
+                    <div class="stat-value"><%= orders.size() %></div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+            </div>
 
-        <% if (orders.isEmpty()) { %>
-            <p>You have not placed any orders yet.</p>
-        <% } else { %>
-            <table class="styled-table">
-                <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (Order order : orders) { %>
-                <tr>
-                    <td><%= order.getId() %></td>
-                    <td><%= sdf.format(order.getOrderDate()) %></td>
-                    <td>$<%= String.format("%.2f", order.getTotalAmount()) %></td>
-                    <td><%= order.getStatus() %></td>
-                    <td>
-                        <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>">View Details</a>
-                    </td>
-                </tr>
-                <% } // End for loop %>
-                </tbody>
-            </table>
-        <% } // End else %>
+            <!-- Orders Table -->
+            <div class="table-wrapper">
+                <table class="styled-table orders-table">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% for (Order order : orders) { %>
+                    <tr class="order-row">
+                        <td>
+                            <span class="order-id">#<%= order.getId() %></span>
+                        </td>
+                        <td>
+                            <span class="order-date"><%= sdf.format(order.getOrderDate()) %></span>
+                        </td>
+                        <td>
+                            <span class="order-total">$<%= String.format("%.2f", order.getTotalAmount()) %></span>
+                        </td>
+                        <td>
+                                        <span class="status-badge status-<%= order.getStatus().toLowerCase().replace(" ", "-") %>">
+                                            <%= order.getStatus() %>
+                                        </span>
+                        </td>
+                        <td>
+                            <a href="viewOrderDetails.jsp?orderId=<%= order.getId() %>" class="btn btn-sm btn-outline">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    <% } // End for loop %>
+                    </tbody>
+                </table>
+            </div>
+            <% } // End else %>
+        </div>
+
     </div>
+</main>
 
 </body>
 </html>

@@ -5,9 +5,9 @@
 <%@ page import="org.foodapp.foodapp.OrderDAO" %>
 
 <%
-    // 1. Admin Authentication Check
+    // 1. Authentication Check
     User user = (User) session.getAttribute("user");
-    if (user == null || !"ADMIN".equals(user.getRole())) {
+    if (user == null) {
         response.sendRedirect("login.jsp?error=Access Denied");
         return;
     }
@@ -16,20 +16,38 @@
     String orderIdStr = request.getParameter("orderId");
     String newStatus = request.getParameter("newStatus");
 
+    // 3. Get redirect path, default to admin dashboard
+    String redirectPage = request.getParameter("redirect");
+    if (redirectPage == null || redirectPage.isEmpty()) {
+        redirectPage = "adminDashboard.jsp";
+    }
+
     if (orderIdStr != null && newStatus != null) {
         try {
             int orderId = Integer.parseInt(orderIdStr);
-
-            // 3. Call DAO
             OrderDAO orderDAO = new OrderDAO();
-            orderDAO.updateOrderStatus(orderId, newStatus);
+            boolean success = false;
+
+            // 4. NEW: Role-based permissions
+            if ("ADMIN".equals(user.getRole())) {
+                // Admin can set Preparing or Cancelled (from our old logic)
+                if (newStatus.equals("Preparing") || newStatus.equals("Cancelled")) {
+                    success = orderDAO.updateOrderStatus(orderId, newStatus);
+                }
+            } else if ("DRIVER".equals(user.getRole())) {
+                // Driver can ONLY set "Delivered"
+                if (newStatus.equals("Delivered")) {
+                    success = orderDAO.updateOrderStatus(orderId, newStatus);
+                }
+            }
+
+            // (You could add success/error messages to the redirect here if you want)
 
         } catch (NumberFormatException e) {
-            // Handle error
             System.out.println("Invalid Order ID format: " + orderIdStr);
         }
     }
 
-    // 4. Redirect back to the dashboard
-    response.sendRedirect("adminDashboard.jsp");
+    // 5. Redirect back to the correct page
+    response.sendRedirect(redirectPage);
 %>

@@ -13,46 +13,114 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed - Food Ordering App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/order_confirmed.css">
+    <title>Order Confirmed - FoodApp</title>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/orderConfirmation.css">
 </head>
-<body>
-    <div class="confirmation-container">
-        <div class="success-icon">
-            <svg class="checkmark" viewBox="0 0 52 52">
-                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-            </svg>
+<body class="confirmation-body">
+
+<div class="confirmation-container">
+
+    <!-- Success Animation -->
+    <div class="success-animation">
+        <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+    </div>
+
+    <!-- Confirmation Card -->
+    <div class="confirmation-card card">
+
+        <!-- Thank You Header -->
+        <div class="confirmation-header">
+            <h1 class="confirmation-title">Thank You, <span class="user-name"><%= user.getUsername() %></span>!</h1>
+            <p class="confirmation-subtitle">Your order has been placed successfully</p>
         </div>
 
-        <h1>Thank You, <span class="username"><%= user.getUsername() %></span>!</h1>
-
-        <div class="confirmation-message">
+        <!-- Order Details -->
+        <div class="order-details">
             <% if (orderId != null) { %>
-                <p class="order-id">Your order ID: <strong>#<%= orderId %></strong></p>
-                <p class="status-message">Your order has been placed successfully and is now being prepared.</p>
+            <div class="order-id-display">
+                <span class="order-id-label">Order ID</span>
+                <span class="order-id-value">#<%= orderId %></span>
+            </div>
+            <div class="status-message">
+                <div class="status-icon">🍳</div>
+                <p>Your delicious meal is now being prepared by our chefs!</p>
+            </div>
             <% } else { %>
-                <p class="status-message">Your order has been placed successfully.</p>
+            <div class="status-message">
+                <div class="status-icon">✓</div>
+                <p>Your order has been successfully placed.</p>
+            </div>
             <% } %>
         </div>
 
-        <div class="action-buttons">
-            <a href="orderHistory.jsp" class="btn-secondary">View Order History</a>
-            <a href="menu.jsp" class="btn-primary">Place Another Order</a>
+        <!-- Timeline -->
+        <div class="order-timeline">
+            <div class="timeline-step completed">
+                <div class="step-icon">✓</div>
+                <div class="step-content">
+                    <span class="step-title">Order Placed</span>
+                    <span class="step-description">We've received your order</span>
+                </div>
+            </div>
+            <div class="timeline-step active">
+                <div class="step-icon">🍳</div>
+                <div class="step-content">
+                    <span class="step-title">Preparing</span>
+                    <span class="step-description">Your meal is being prepared</span>
+                </div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-icon">🚗</div>
+                <div class="step-content">
+                    <span class="step-title">Out for Delivery</span>
+                    <span class="step-description">On the way to you</span>
+                </div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-icon">🏠</div>
+                <div class="step-content">
+                    <span class="step-title">Delivered</span>
+                    <span class="step-description">Enjoy your meal!</span>
+                </div>
+            </div>
         </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="orderHistory.jsp" class="btn btn-outline btn-lg">
+                📋 View Order History
+            </a>
+            <a href="menu.jsp" class="btn btn-primary btn-lg">
+                🍽️ Order Again
+            </a>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="additional-info">
+            <p class="info-text">
+                You can track your order status in <a href="orderHistory.jsp">Order History</a>
+            </p>
+        </div>
+
     </div>
+
+</div>
 
 <%
     // Clean up the session attribute
     session.removeAttribute("lastOrderId");
 %>
+
 </body>
 </html>

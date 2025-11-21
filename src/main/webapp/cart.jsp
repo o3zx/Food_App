@@ -93,95 +93,154 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title>Shopping Cart - FoodApp</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/cart.css">
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/cart.css">
 </head>
 <body>
 
+<!-- Main Header -->
 <header class="main-header">
-    <a href="menu.jsp" class="logo">FoodApp</a>
-    <nav>
-        <a href="cart.jsp">🛒 Cart</a>
-        <% if (user != null) { %>
-        <a href="orderHistory.jsp">My Orders</a>
-        <a href="profile.jsp">My Profile</a>
-        <a href="logout.jsp">Logout</a>
-        <% } else { %>
-        <a href="login.jsp" class="btn">Login / Register</a>
-        <% } %>
-    </nav>
+    <div class="container">
+        <a href="menu.jsp" class="main-header-logo">FoodApp</a>
+        <nav class="main-header-nav">
+            <a href="menu.jsp">Menu</a>
+            <a href="cart.jsp" class="active">🛒 Cart</a>
+            <% if (user != null) { %>
+            <a href="orderHistory.jsp">My Orders</a>
+            <a href="profile.jsp">Profile</a>
+            <a href="logout">Logout</a>
+            <% } else { %>
+            <a href="login.jsp" class="btn btn-primary">Login / Register</a>
+            <% } %>
+        </nav>
+    </div>
 </header>
 
-<div class="container">
-    <div class="history-header"> <h1>Shopping Cart</h1>
-        <a href="menu.jsp" class="btn">Continue Shopping</a>
-    </div>
+<!-- Main Content -->
+<main class="cart-main">
+    <div class="container">
 
-    <% if (cart.isEmpty()) { %>
-    <div class="card" style="padding: 40px; text-align: center;">
-        <h2>Your cart is empty.</h2>
-        <p style="margin-top: 10px;">Looks like you haven't added any items yet.</p>
-        <a href="menu.jsp" class="btn" style="margin-top: 20px;">Start Shopping</a>
-    </div>
-    <% } else { %>
-    <div class="cart-container">
-        <div class="cart-items">
-            <table class="styled-table">
-                <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (CartItem item : cart.values()) { %>
-                <tr>
-                    <td><%= item.getProduct().getName() %></td>
-                    <td>$<%= String.format("%.2f", item.getProduct().getPrice()) %></td>
-                    <td><%= item.getQuantity() %></td>
-                    <td>$<%= String.format("%.2f", item.getTotalPrice()) %></td>
-                    <td>
-                        <form action="cart.jsp" method="post">
-                            <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
-                            <input type="hidden" name="action" value="remove">
-                            <button type="submit" class="btn-danger" style="padding: 8px 12px; width: auto;">Remove</button>
-                        </form>
-                    </td>
-                </tr>
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <h1 class="page-title">Shopping Cart</h1>
+                <% if (!cart.isEmpty()) { %>
+                <p class="page-subtitle"><%= cart.size() %> item<%= cart.size() != 1 ? "s" : "" %> in your cart</p>
                 <% } %>
-                </tbody>
-            </table>
+            </div>
+            <div class="page-header-actions">
+                <a href="menu.jsp" class="btn btn-outline">
+                    <span class="btn-icon">←</span>
+                    Continue Shopping
+                </a>
+            </div>
         </div>
 
-        <div class="cart-summary">
-            <h2>Cart Summary</h2>
-            <div class="cart-summary-row cart-summary-total">
-                <span>Total:</span>
-                <span>$<%= String.format("%.2f", cartTotal) %></span>
+        <!-- Cart Content -->
+        <% if (cart.isEmpty()) { %>
+        <!-- Empty Cart State -->
+        <div class="empty-cart card">
+            <div class="empty-cart-icon">🛒</div>
+            <h2 class="empty-cart-title">Your cart is empty</h2>
+            <p class="empty-cart-text">Looks like you haven't added any delicious items yet.</p>
+            <a href="menu.jsp" class="btn btn-primary">Browse Menu</a>
+        </div>
+        <% } else { %>
+        <!-- Cart with Items -->
+        <div class="cart-layout">
+
+            <!-- Cart Items Section -->
+            <div class="cart-items-section">
+                <div class="section-header">
+                    <h2 class="section-title">Your Items</h2>
+                </div>
+
+                <div class="cart-items-wrapper">
+                    <table class="styled-table cart-table">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% for (CartItem item : cart.values()) { %>
+                        <tr class="cart-item-row">
+                            <td>
+                                <div class="item-info">
+                                    <span class="item-name"><%= item.getProduct().getName() %></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="item-price">$<%= String.format("%.2f", item.getProduct().getPrice()) %></span>
+                            </td>
+                            <td>
+                                <span class="item-quantity"><%= item.getQuantity() %></span>
+                            </td>
+                            <td>
+                                <span class="item-subtotal">$<%= String.format("%.2f", item.getTotalPrice()) %></span>
+                            </td>
+                            <td>
+                                <form action="cart.jsp" method="post" class="remove-form">
+                                    <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <% if (user != null) { %>
-            <a href="checkout.jsp" class="btn" style="width: 100%;">Proceed to Checkout</a>
-            <% } else { %>
-            <a href="login.jsp?error=Please log in to check out." class="btn" style="width: 100%;">Login to Check Out</a>
-            <% } %>
+            <!-- Cart Summary Section -->
+            <div class="cart-summary-section">
+                <div class="cart-summary card">
+                    <h2 class="summary-title">Order Summary</h2>
+
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span class="summary-label">Items (<%= cart.size() %>):</span>
+                            <span class="summary-value">$<%= String.format("%.2f", cartTotal) %></span>
+                        </div>
+                        <div class="summary-row summary-divider"></div>
+                        <div class="summary-row summary-total">
+                            <span class="summary-label">Total:</span>
+                            <span class="summary-value">$<%= String.format("%.2f", cartTotal) %></span>
+                        </div>
+                    </div>
+
+                    <div class="summary-actions">
+                        <% if (user != null) { %>
+                        <a href="checkout.jsp" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                        <% } else { %>
+                        <a href="login.jsp?error=Please log in to check out." class="btn btn-primary btn-block">Login to Checkout</a>
+                        <% } %>
+                    </div>
+
+                    <div class="summary-footer">
+                        <p class="summary-note">🔒 Secure checkout guaranteed</p>
+                    </div>
+                </div>
+            </div>
 
         </div>
+        <% } %>
+
     </div>
-    <% } %>
-</div>
+</main>
+
 </body>
 </html>

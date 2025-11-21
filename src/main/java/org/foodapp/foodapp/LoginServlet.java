@@ -1,18 +1,18 @@
 package org.foodapp.foodapp;
-import org.foodapp.foodapp.UserDAO;
+
 import org.foodapp.foodapp.User;
-import java.io.IOException;
+import org.foodapp.foodapp.UserDAO;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 
-@WebServlet("/login")
+@WebServlet("/login") // This matches the form action we will set
 public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private UserDAO userDAO = new UserDAO(); // Uses the MOCKED DAO
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -21,20 +21,36 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        User user = userDAO.authenticateUser(username, password); // Will use the MOCK logic
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.authenticateUser(username, password);
 
         if (user != null) {
-            // Success
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("loggedIn", true);
 
-            // Redirect to MenuServlet
-            response.sendRedirect("menu");
+            // 4. Role-Based Redirects (Moved from JSP)
+            if ("ADMIN".equals(user.getRole())) {
+                response.sendRedirect("adminDashboard.jsp");
+            } else if ("DRIVER".equals(user.getRole())) {
+                response.sendRedirect("driverDashboard.jsp");
+            } else {
+                response.sendRedirect("menu.jsp");
+            }
+
         } else {
-            // Failure
-            request.setAttribute("errorMessage", "Invalid username or password. Use testuser/pass.");
+            // 5. Error Handling
+            // Instead of setting a local string, we attach it to the request
+            request.setAttribute("errorMessage", "Invalid username or password.");
+
+            // Forward back to the JSP to show the error
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }

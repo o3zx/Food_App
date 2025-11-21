@@ -15,16 +15,9 @@ public class DBUtil {
     private static final String USER = "root";
     private static final String PASSWORD = "Yahyadriss1968";
 
-    /**
-     * This is the 'magic string' that tells Java which driver to use.
-     * This class name is inside the .jar file we added.
-     */
+        // the connector
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
-
-    /**
-     * This is the static method that all our DAOs will call.
-     * It returns a 'Connection' object.
-     */
+            // method to get our connection object
     public static Connection getConnection() {
         Connection connection = null;
         try {

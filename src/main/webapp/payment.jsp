@@ -30,55 +30,144 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Payment</title>
+    <title>Payment - FoodApp</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/payment.css">
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/payment.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="login-container">
-        <div class="login-card"> <h1>Complete Your Payment</h1>
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <a href="menu.jsp" class="main-header-logo">FoodApp</a>
+        <nav class="main-header-nav">
+            <a href="menu.jsp">Menu</a>
+            <a href="cart.jsp">🛒 Cart</a>
+            <a href="orderHistory.jsp">My Orders</a>
+            <a href="profile.jsp">Profile</a>
+            <a href="logout">Logout</a>
+        </nav>
+    </div>
+</header>
 
-            <div class="payment-summary">
-                Total: <%= String.format("$%.2f", cartTotal) %>
+<!-- Main Content -->
+<main class="payment-main">
+    <div class="container">
+
+        <!-- Checkout Progress -->
+        <div class="checkout-progress">
+            <div class="progress-step completed">
+                <div class="step-circle">✓</div>
+                <span class="step-label">Cart</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step completed">
+                <div class="step-circle">✓</div>
+                <span class="step-label">Review Order</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step active">
+                <div class="step-circle">3</div>
+                <span class="step-label">Payment</span>
+            </div>
+        </div>
+
+        <!-- Payment Card -->
+        <div class="payment-card card">
+
+            <!-- Payment Header -->
+            <div class="payment-header">
+                <h1 class="payment-title">Complete Your Payment</h1>
+                <p class="payment-subtitle">Choose your preferred payment method</p>
             </div>
 
-            <form action="placeOrder.jsp" method="post">
+            <!-- Payment Summary -->
+            <div class="payment-summary">
+                <div class="summary-row">
+                    <span class="summary-label">Total Amount:</span>
+                    <span class="summary-value">$<%= String.format("%.2f", cartTotal) %></span>
+                </div>
+            </div>
 
-                <div class="payment-selection">
-                    <div class="payment-option">
-                        <input type="radio" id="paypal" name="paymentMethod" value="paypal" checked>
-                        <label for="paypal">Pay with PayPal</label>
-                    </div>
+            <!-- Payment Form -->
+            <form action="placeOrder" method="post">
+                <div class="payment-methods">
+                    <h2 class="section-title">Select Payment Method</h2>
 
-                    <div class="payment-option">
-                        <input type="radio" id="applepay" name="paymentMethod" value="applepay">
-                        <label for="applepay">Pay with Apple Pay</label>
-                    </div>
+                    <div class="payment-options">
 
-                    <div class="payment-option">
-                        <input type="radio" id="card" name="paymentMethod" value="card">
-                        <label for="card">Pay with Credit Card (Test)</label>
+                        <!-- PayPal Option -->
+                        <label class="payment-option" for="paypal">
+                            <input type="radio" id="paypal" name="paymentMethod" value="paypal" checked>
+                            <div class="option-content">
+                                <div class="option-icon">💳</div>
+                                <div class="option-details">
+                                    <span class="option-name">PayPal</span>
+                                    <span class="option-description">Pay securely with PayPal</span>
+                                </div>
+                            </div>
+                            <div class="option-checkmark">✓</div>
+                        </label>
+
+                        <!-- Apple Pay Option -->
+                        <label class="payment-option" for="applepay">
+                            <input type="radio" id="applepay" name="paymentMethod" value="applepay">
+                            <div class="option-content">
+                                <div class="option-icon">🍎</div>
+                                <div class="option-details">
+                                    <span class="option-name">Apple Pay</span>
+                                    <span class="option-description">Quick and secure payment</span>
+                                </div>
+                            </div>
+                            <div class="option-checkmark">✓</div>
+                        </label>
+
+                        <!-- Credit Card Option -->
+                        <label class="payment-option" for="card">
+                            <input type="radio" id="card" name="paymentMethod" value="card">
+                            <div class="option-content">
+                                <div class="option-icon">💳</div>
+                                <div class="option-details">
+                                    <span class="option-name">Credit/Debit Card</span>
+                                    <span class="option-description">Test payment method</span>
+                                </div>
+                            </div>
+                            <div class="option-checkmark">✓</div>
+                        </label>
+
                     </div>
                 </div>
 
-                <button type="submit" class="btn" style="margin-top: 25px;">
-                    Pay <%= String.format("$%.2f", cartTotal) %>
-                </button>
+                <!-- Submit Button -->
+                <div class="payment-actions">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        🔒 Pay $<%= String.format("%.2f", cartTotal) %>
+                    </button>
+                    <a href="checkout.jsp" class="btn btn-outline btn-block">
+                        <span class="btn-icon">←</span>
+                        Back to Order Review
+                    </a>
+                </div>
+
+                <!-- Security Note -->
+                <div class="security-note">
+                    <span class="security-icon">🔒</span>
+                    <p>Your payment information is encrypted and secure</p>
+                </div>
+
             </form>
+
         </div>
+
     </div>
-</div>
+</main>
 
 </body>
 </html>

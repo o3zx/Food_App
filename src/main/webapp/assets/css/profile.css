@@ -1,0 +1,161 @@
+/* ============================================
+   PROFILE PAGE - User Settings
+   ============================================ */
+
+/* Main Content Area */
+.profile-main {
+    padding: var(--spacing-2xl) 0;
+    min-height: calc(100vh - 80px);
+}
+
+/* Active Nav Link */
+.main-header-nav a.active {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* Page Header */
+.page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.page-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.page-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin-bottom: 0;
+}
+
+/* Profile Layout */
+.profile-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Profile Info Card */
+.profile-info-card {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: var(--color-white);
+}
+
+.profile-info-card .card-header {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.profile-info-card .card-title {
+    color: var(--color-white);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.info-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+}
+
+.role-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Address Card */
+.address-card {
+    background-color: var(--color-white);
+}
+
+/* Password Card */
+.password-card {
+    background-color: var(--color-white);
+}
+
+/* Profile Form */
+.profile-form {
+    width: 100%;
+}
+
+.profile-form .form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.profile-form .form-group:last-of-type {
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-form .btn {
+    width: 100%;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .profile-main {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .page-header {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .page-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .page-subtitle {
+        font-size: var(--font-size-sm);
+    }
+
+    .profile-layout {
+        gap: var(--spacing-lg);
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .info-value {
+        font-size: var(--font-size-base);
+    }
+}

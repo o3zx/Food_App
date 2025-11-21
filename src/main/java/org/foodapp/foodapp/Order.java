@@ -8,6 +8,7 @@ public class Order {
     private double totalAmount;
     private String status;
     private String deliveryAddress;
+    private int driverId;
 
 
     public Order() {}
@@ -28,4 +29,6 @@ public class Order {
     public void setStatus(String status) { this.status = status; }
     public String getDeliveryAddress() { return deliveryAddress; }
     public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
+    public void setDriverId(int driverId) { this.driverId = driverId; }
+    public int getDriverId() { return driverId; }
 }

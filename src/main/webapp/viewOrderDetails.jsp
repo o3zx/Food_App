@@ -28,104 +28,173 @@
     OrderDAO orderDAO = new OrderDAO();
     Order order = orderDAO.getOrderById(orderId);
     List<OrderItem> items = orderDAO.getItemsForOrder(orderId);
+    if(order == null) {
+        response.sendRedirect("orderHistory.jsp?error=Order not found");
+        return;
+    }
 
     // Security check: Make sure this order belongs to this user OR user is admin
-    if (order == null || (order.getUserId() != user.getId() && !"ADMIN".equals(user.getRole()))) {
-        response.sendRedirect("orderHistory.jsp");
+    boolean isCustomer = order.getUserId() == user.getId();
+    boolean isAdmin = user.getRole().equals("ADMIN");
+    boolean isAssignedDriver = order.getDriverId() == user.getId();
+    if(!isCustomer && !isAdmin && !isAssignedDriver) {
+        response.sendRedirect("login.jsp?error=Accses Denied");
         return;
     }
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details #<%= orderId %> - Food Ordering App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/orderDetails.css">
+    <title>Order #<%= orderId %> - FoodApp</title>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Page-Specific Styles (Shared with viewOrderDetails) -->
+    <link rel="stylesheet" href="assets/css/viewOrderDetails.css">
 </head>
 <body>
-    <div class="details-container">
-        <header class="details-header">
-            <div class="header-content">
-                <h1>Order Details #<%= orderId %></h1>
-                <% if (order != null) { %>
+
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <a href="menu.jsp" class="main-header-logo">FoodApp</a>
+        <nav class="main-header-nav">
+            <% if("ADMIN".equals(user.getRole())) { %>
+            <a href="adminDashboard.jsp">Dashboard</a>
+            <a href="adminManageProducts.jsp">Products</a>
+            <% }
+            else if ("DRIVER".equals(user.getRole())) { %>
+            <a href="profile.jsp">Profile</a>
+            <a href="logout">Logout</a>
+            <% }
+             else { %>
+            <a href="menu.jsp">Menu</a>
+            <a href="cart.jsp">🛒 Cart</a>
+            <a href="orderHistory.jsp">My Orders</a>
+            <a href="logout">Logout</a>
+            <% } %>
+
+        </nav>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="track-main">
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <h1 class="page-title">Order Details</h1>
                 <div class="order-meta">
-                    <span class="status-badge <%= order.getStatus().toLowerCase().replace(" ", "-") %>">
-                        <%= order.getStatus() %>
-                    </span>
-                    <span class="order-date">
-                        <%= new java.text.SimpleDateFormat("MMM dd, yyyy HH:mm").format(order.getOrderDate()) %>
-                    </span>
+                    <span class="order-id-badge">#<%= orderId %></span>
+                    <% if (order != null) { %>
+                    <span class="status-badge status-<%= order.getStatus().toLowerCase().replace(" ", "-") %>">
+                                <%= order.getStatus() %>
+                            </span>
+                    <span class="order-date-text">
+                                <%= new java.text.SimpleDateFormat("MMM dd, yyyy HH:mm").format(order.getOrderDate()) %>
+                            </span>
+                    <% } %>
                 </div>
+            </div>
+            <div class="page-header-actions">
+
+                <% if (!"ADMIN".equals(user.getRole()) && !"DRIVER".equals(user.getRole())) { %>
+                <a href="trackOrder.jsp?orderId=<%= orderId %>" class="btn btn-primary">
+                    <span class="btn-icon">📍</span>
+                    Track Order
+                </a>
+                <% } %>
+
+
+                <% if ("ADMIN".equals(user.getRole())) { %>
+                <a href="adminDashboard.jsp" class="btn btn-outline">
+                    <span class="btn-icon">←</span>
+                    Dashboard
+                </a>
+                <% } else if ("DRIVER".equals(user.getRole())) { %>
+                <a href="driverDashboard.jsp" class="btn btn-outline">Dashboard</a>
+                <% } else { %>
+                <a href="orderHistory.jsp" class="btn btn-outline">
+                    <span class="btn-icon">←</span>
+                    My Orders
+                </a>
                 <% } %>
             </div>
-            <nav class="header-actions">
-                <% if("ADMIN".equals(user.getRole())) { %>
-                <a href="adminDashboard.jsp" class="btn">Back to Dashboard</a>
-                <% } %>
-                <a href="trackOrder.jsp?orderId=<%= orderId %>" class="btn btn-track">📍 Track Order</a>
-            </nav>
-        </header>
+        </div>
 
-        <main class="details-content">
-            <% if (items.isEmpty()) { %>
-                <div class="empty-state">
-                    <div class="empty-icon">📋</div>
-                    <p class="empty-message">Could not find items for this order.</p>
-                </div>
-            <% } else { %>
-                <section class="order-items-section">
-                    <h2>Order Items</h2>
-
-                    <div class="table-container">
-                        <table class="order-items-table">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <%
-                                    double total = 0.0;
-                                    for (OrderItem item : items) {
-                                        double subtotal = item.getPriceAtTimeOfOrder() * item.getQuantity();
-                                        total += subtotal;
-                                %>
-                                <tr>
-                                    <td class="item-name"><%= item.getProductName() %></td>
-                                    <td class="item-qty"><%= item.getQuantity() %></td>
-                                    <td class="item-price">$<%= String.format("%.2f", item.getPriceAtTimeOfOrder()) %></td>
-                                    <td class="item-subtotal">$<%= String.format("%.2f", subtotal) %></td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                            <tfoot>
-                                <tr class="total-row">
-                                    <td colspan="3">Total:</td>
-                                    <td class="total-amount">$<%= String.format("%.2f", total) %></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </section>
-            <% } %>
-        </main>
-
-        <footer class="details-footer">
+        <!-- Order Items Card -->
+        <% if (items.isEmpty()) { %>
+        <!-- Empty State -->
+        <div class="empty-state card">
+            <div class="empty-state-icon">📋</div>
+            <h3 class="empty-state-title">No Items Found</h3>
+            <p class="empty-state-text">Could not find items for this order.</p>
             <% if ("ADMIN".equals(user.getRole())) { %>
-                <a href="adminDashboard.jsp" class="btn-back">← Back to Dashboard</a>
+            <a href="adminDashboard.jsp" class="btn btn-primary">Back to Dashboard</a>
             <% } else { %>
-                <a href="orderHistory.jsp" class="btn-back">← Back to My Orders</a>
+            <a href="orderHistory.jsp" class="btn btn-primary">Back to My Orders</a>
             <% } %>
-        </footer>
+        </div>
+        <% } else { %>
+        <div class="card order-details-card">
+            <div class="card-header">
+                <h2 class="card-title">Order Items</h2>
+            </div>
+            <div class="card-body">
+
+                <div class="table-wrapper">
+                    <table class="styled-table order-items-table">
+                        <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                            double total = 0.0;
+                            for (OrderItem item : items) {
+                                double subtotal = item.getPriceAtTimeOfOrder() * item.getQuantity();
+                                total += subtotal;
+                        %>
+                        <tr>
+                            <td>
+                                <span class="item-name"><%= item.getProductName() %></span>
+                            </td>
+                            <td>
+                                <span class="item-quantity">× <%= item.getQuantity() %></span>
+                            </td>
+                            <td>
+                                <span class="item-price">$<%= String.format("%.2f", item.getPriceAtTimeOfOrder()) %></span>
+                            </td>
+                            <td>
+                                <span class="item-subtotal">$<%= String.format("%.2f", subtotal) %></span>
+                            </td>
+                        </tr>
+                        <% } %>
+                        </tbody>
+                        <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3" class="total-label">Total:</td>
+                            <td class="total-amount">$<%= String.format("%.2f", total) %></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <% } %>
+
     </div>
+</main>
+
 </body>
 </html>

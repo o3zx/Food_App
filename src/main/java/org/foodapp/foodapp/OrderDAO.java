@@ -11,14 +11,7 @@ import java.util.List;
 
 public class OrderDAO {
 
-    /**
-     * Creates a new order in the database.
-     * This method uses a transaction to save to both 'orders' and 'order_items'.
-     *
-     * @param order The main Order object.
-     * @param items The List of OrderItem objects.
-     * @return The new order's ID if successful, or -1 on failure.
-     */
+
     public int createOrder(Order order, List<OrderItem> items) {
         String sqlOrder = "INSERT INTO orders (user_id, totalAmount, status, deliveryAddress) VALUES (?, ?, ?,?)";
         String sqlItem = "INSERT INTO order_items (order_id, product_id, productName, quantity, priceAtTimeOfOrder) VALUES (?, ?, ?, ?, ?)";
@@ -31,10 +24,9 @@ public class OrderDAO {
 
         try {
             conn = DBUtil.getConnection();
-            // --- Start Transaction ---
+
             conn.setAutoCommit(false);
 
-            // 1. Insert the main Order and get its new ID
             psOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
             psOrder.setInt(1, order.getUserId());
             psOrder.setDouble(2, order.getTotalAmount());
@@ -215,6 +207,101 @@ public class OrderDAO {
         }
     }
 
+    public boolean assignDriverToOrder(int orderId, int driverId) {
+
+        String sql = "UPDATE orders SET driver_id = ?, status = 'Out for Delivery' WHERE id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, driverId);
+            ps.setInt(2, orderId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public List<Order> getOrdersByDriverId(int driverId) {
+        List<Order> orders = new ArrayList<>();
+
+        String sql = "SELECT * FROM orders WHERE driver_id = ? AND status != 'Delivered' ORDER BY orderDate";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, driverId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapRowToOrder(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+    public boolean deleteOrder(int orderId) {
+        String deleteItemsSql = "DELETE FROM order_items WHERE order_id = ?";
+        String deleteOrderSql = "DELETE FROM orders WHERE id = ?";
+
+        Connection conn = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            // --- Start Transaction ---
+            conn.setAutoCommit(false);
+
+            // 1. Delete all items from 'order_items'
+            try (PreparedStatement psItems = conn.prepareStatement(deleteItemsSql)) {
+                psItems.setInt(1, orderId);
+                psItems.executeUpdate();
+            }
+
+            // 2. Delete the main order from 'orders'
+            try (PreparedStatement psOrder = conn.prepareStatement(deleteOrderSql)) {
+                psOrder.setInt(1, orderId);
+                int rowsAffected = psOrder.executeUpdate();
+
+                if (rowsAffected == 0) {
+                    // This check is good, but let's not throw an error
+                    // just in case. The main thing is items are gone.
+                }
+            }
+
+            // 3. If both succeeded, commit the transaction
+            conn.commit();
+            // --- End Transaction ---
+
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error deleting order (Transaction failed): " + e.getMessage());
+            e.printStackTrace();
+            try {
+                if (conn != null) {
+                    conn.rollback(); // 4. If anything failed, roll back
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // 5. Clean up
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Reset to default
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Helper method to map a ResultSet row to an Order object.
      * Avoids duplicate code.
@@ -227,6 +314,7 @@ public class OrderDAO {
         order.setTotalAmount(rs.getDouble("totalAmount"));
         order.setStatus(rs.getString("status"));
         order.setDeliveryAddress(rs.getString("deliveryAddress"));
+        order.setDriverId(rs.getInt("driver_id"));
         return order;
     }
 }
