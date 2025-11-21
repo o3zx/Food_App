@@ -1,7 +1,7 @@
 # 🍔 FoodApp - Online Food Ordering System
 
 
-**[🔴 LIVE DEMO CLICK HERE](https://your-app-url.onrender.com)**
+**[🔴 LIVE DEMO CLICK HERE](https://foodapp-ajmanuni.onrender.com/)**
 
 
 
