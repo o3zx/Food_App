@@ -73,7 +73,8 @@ Artificial Intelligence tools were utilized to accelerate development, specifica
 ## 📊 Diagrams
 
 ### Class Diagram
-![Class Diagram showing Model, DAO, and Servlet layers](assets/images/class_diagram.png)
+
+<img width="1508" height="788" alt="class_diagram" src="https://github.com/user-attachments/assets/cf7d4b77-8459-4fc1-9e08-50d5df4ebdd6" />
 
 ### ER Diagram
-![Entity Relationship Diagram showing database tables](assets/images/er_diagram.png)
+<img width="1496" height="885" alt="er_diagram" src="https://github.com/user-attachments/assets/2041084c-a0a6-436a-be01-9f639ce0a2cc" />
