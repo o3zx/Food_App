@@ -112,25 +112,28 @@
                             <span class="order-total">$<%= String.format("%.2f", order.getTotalAmount()) %></span>
                         </td>
                         <td>
-                                        <span class="status-badge status-<%= order.getStatus().toLowerCase().replace(" ", "-") %>">
-                                            <%= order.getStatus() %>
-                                        </span>
+                            <span class="status-badge status-<%= order.getStatus().toLowerCase().replace(" ", "-") %>">
+                                <%= order.getStatus() %>
+                            </span>
                         </td>
                         <td>
                             <div class="action-cell">
                                 <%-- LOGIC FOR ACTIONS BASED ON STATUS --%>
 
-                                    <% if (order.getStatus().equals("Pending")) { %>
-                                    <form action="adminOrderAction" method="post" class="status-form">
-                                        <input type="hidden" name="action" value="assign"> <input type="hidden" name="orderId" value="<%= order.getId() %>">
-                                        <select name="driverId" required>
+                                <% if (order.getStatus().equals("Pending")) { %>
+                                <form action="adminOrderAction" method="post" class="status-form">
+                                    <input type="hidden" name="action" value="assign">
+                                    <input type="hidden" name="orderId" value="<%= order.getId() %>">
+                                    <div class="driver-select-group">
+                                        <select name="driverId" class="form-select form-select-sm" required>
                                             <option value="">-- Assign Driver --</option>
                                             <% for (User driver : drivers) { %>
                                             <option value="<%= driver.getId() %>"><%= driver.getUsername() %></option>
                                             <% } %>
                                         </select>
-                                        <button type="submit">Assign</button>
-                                    </form>
+                                        <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                                    </div>
+                                </form>
 
                                 <% } else if (order.getStatus().equals("Out for Delivery")) { %>
                                 <div class="driver-info">
@@ -140,11 +143,10 @@
                                 <% } else if (order.getStatus().equals("Delivered") || order.getStatus().equals("Cancelled")) { %>
                                 <div class="completed-actions">
                                     <span class="status-label"><%= order.getStatus() %></span>
-                                    <form action="adminOrderAction" method="post" style="margin-top: 5px;">
-                                        <input type="hidden" name="action" value="delete"> <input type="hidden" name="orderId" value="<%= order.getId() %>">
-                                        <button type="submit" class="btn-danger"
-                                                style="padding: 5px 8px; font-size: 12px; width: auto;"
-                                                onclick="return confirm('Are you sure?');">
+                                    <form action="adminOrderAction" method="post" class="delete-form">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="orderId" value="<%= order.getId() %>">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">
                                             Delete
                                         </button>
                                     </form>

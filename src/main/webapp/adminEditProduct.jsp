@@ -40,37 +40,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product - Admin Dashboard</title>
 
-    <!-- Global Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Page-Specific Styles -->
     <link rel="stylesheet" href="assets/css/editProduct.css">
 </head>
 <body>
 
-<!-- Main Header -->
 <header class="main-header">
     <div class="container">
         <a href="adminDashboard.jsp" class="main-header-logo">FoodApp Admin</a>
         <nav class="main-header-nav">
             <a href="adminDashboard.jsp">Dashboard</a>
             <a href="adminManageProducts.jsp" class="active">Products</a>
-            <a href="adminManageOrders.jsp">Orders</a>
-            <a href="logout">Logout</a>
+            <a href="adminDashboard.jsp">Orders</a> <a href="logout">Logout</a>
         </nav>
     </div>
 </header>
 
-<!-- Main Content -->
 <main class="admin-main">
     <div class="container">
 
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Edit Product</h1>
             <p class="page-subtitle">Update details for Product ID: <span class="product-id-badge">#<%= product.getId() %></span></p>
         </div>
 
-        <!-- Edit Product Form Card -->
         <div class="form-card card">
             <form action="adminProductAction" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update">
@@ -132,26 +125,36 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="imageFile" class="form-label">Product Image (Optional) <br>
-                            <span class="file-input-label">Choose a new image file</span></label>
+                        <label class="form-label">Option A: Upload File (Local)</label>
                         <div class="file-input-wrapper">
                             <input
                                     type="file"
                                     id="imageFile"
                                     name="imageFile"
-                                    class="form-input file-input"
+                                    class="file-input"
                                     accept="image/*">
-
+                            <label for="imageFile" class="file-input-label">Choose a new image file</label>
                         </div>
                         <div class="current-image-info">
                             <span class="current-image-label">Current image:</span>
                             <span class="current-image-filename"><%= product.getImageUrl() %></span>
                         </div>
-                        <span class="form-help">Leave empty to keep the current image</span>
                     </div>
                 </div>
 
-                <!-- Form Actions -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imageUrl" class="form-label">Option B: Paste Image URL (Cloud)</label>
+                        <input
+                                type="text"
+                                id="imageUrl"
+                                name="imageUrl"
+                                class="form-input"
+                                placeholder="https://example.com/image.jpg">
+                        <span class="form-help">If using Cloud Hosting, paste a URL here.</span>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <a href="adminManageProducts.jsp" class="btn btn-outline">Cancel</a>
                     <button type="submit" class="btn btn-primary">Update Product</button>

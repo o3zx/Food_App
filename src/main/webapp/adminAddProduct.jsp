@@ -19,37 +19,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Product - Admin Dashboard</title>
 
-    <!-- Global Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Page-Specific Styles -->
     <link rel="stylesheet" href="assets/css/addProduct.css">
 </head>
 <body>
 
-<!-- Main Header -->
 <header class="main-header">
     <div class="container">
         <a href="adminDashboard.jsp" class="main-header-logo">FoodApp Admin</a>
         <nav class="main-header-nav">
             <a href="adminDashboard.jsp">Dashboard</a>
             <a href="adminManageProducts.jsp">Products</a>
-            <a href="adminManageOrders.jsp">Orders</a>
-            <a href="logout">Logout</a>
+            <a href="adminDashboard.jsp">Orders</a> <a href="logout">Logout</a>
         </nav>
     </div>
 </header>
 
-<!-- Main Content -->
 <main class="admin-main">
     <div class="container">
 
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Add New Product</h1>
             <p class="page-subtitle">Add a delicious new item to your menu</p>
         </div>
 
-        <!-- Add Product Form Card -->
         <div class="form-card card">
             <form action="adminProductAction" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="add">
@@ -107,23 +100,32 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="imageFile" class="form-label">Product Image
-                            <br>
-                            <span class="file-input-label">Choose an image file</span></label>
-                        <div class="file-input-wrapper">
-                            <input
-                                    type="file"
-                                    id="imageFile"
-                                    name="imageFile"
-                                    class="form-input file-input"
-                                    accept="/uploads/*">
-
-                        </div>
+                        <label class="form-label">Option A: Upload Image (Local)</label>
+                        <label for="imageFile" class="file-input-label">Choose an image file</label>
+                        <input
+                                type="file"
+                                id="imageFile"
+                                name="imageFile"
+                                class="file-input"
+                                accept="image/*"
+                                style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px;">
                         <span class="form-help">Recommended: JPG or PNG, max 5MB</span>
                     </div>
                 </div>
 
-                <!-- Form Actions -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imageUrl" class="form-label">Option B: Paste Image URL (Cloud)</label>
+                        <input
+                                type="text"
+                                id="imageUrl"
+                                name="imageUrl"
+                                class="form-input"
+                                placeholder="https://example.com/image.jpg">
+                        <span class="form-help">Use this for the hosted demo (Render).</span>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <a href="adminManageProducts.jsp" class="btn btn-outline">Cancel</a>
                     <button type="submit" class="btn btn-primary">Add Product</button>
