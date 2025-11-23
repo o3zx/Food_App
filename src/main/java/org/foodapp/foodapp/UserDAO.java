@@ -49,10 +49,9 @@ public class UserDAO {
      * @return true if added, false if username already exists or an error occurs.
      */
     public boolean addUser(User user) {
-        // First, check if user already exists
         if (getUserByUsername(user.getUsername()) != null) {
             System.out.println("DAO: User " + user.getUsername() + " already exists.");
-            return false; // Registration failed: Username taken
+            return false;
         }
 
         String sql = "INSERT INTO users (username, email, passwordHash, role, Address) VALUES (?, ?, ?, ?,?)";
@@ -68,10 +67,8 @@ public class UserDAO {
             ps.setString(4, "CUSTOMER");
             ps.setString(5, user.getAddress());
 
-            // Execute the insert
             int rowsAffected = ps.executeUpdate();
 
-            // Return true if one row was successfully inserted
             return rowsAffected > 0;
 
         } catch (SQLException e) {

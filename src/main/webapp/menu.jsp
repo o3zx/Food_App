@@ -135,8 +135,9 @@
                         <div class="product-footer">
                             <span class="product-price">$<%= String.format("%.2f", product.getPrice()) %></span>
                             <div class="quantity-selector">
-                                <label for="quantity-<%= product.getId() %>" class="quantity-label">Qty:</label>
-                                <input type="number" id="quantity-<%= product.getId() %>" name="quantity_<%= product.getId() %>" value="<%= currentQuantity %>" min="0" max="99" class="quantity-input">
+                                <button type="button" class="quantity-btn quantity-btn-minus" onclick="decrementQuantity(<%= product.getId() %>)">−</button>
+                                <input type="number" id="quantity-<%= product.getId() %>" name="quantity_<%= product.getId() %>" value="<%= currentQuantity %>" min="0" max="99" class="quantity-input" readonly>
+                                <button type="button" class="quantity-btn quantity-btn-plus" onclick="incrementQuantity(<%= product.getId() %>)">+</button>
                             </div>
                         </div>
                     </div>
@@ -180,8 +181,9 @@
                             <div class="product-footer">
                                 <span class="product-price">$<%= String.format("%.2f", product.getPrice()) %></span>
                                 <div class="quantity-selector">
-                                    <label for="quantity-<%= product.getId() %>" class="quantity-label">Qty:</label>
-                                    <input type="number" id="quantity-<%= product.getId() %>" name="quantity_<%= product.getId() %>" value="<%= currentQuantity %>" min="0" max="99" class="quantity-input">
+                                    <button type="button" class="quantity-btn quantity-btn-minus" onclick="decrementQuantity(<%= product.getId() %>)">−</button>
+                                    <input type="number" id="quantity-<%= product.getId() %>" name="quantity_<%= product.getId() %>" value="<%= currentQuantity %>" min="0" max="99" class="quantity-input" readonly>
+                                    <button type="button" class="quantity-btn quantity-btn-plus" onclick="incrementQuantity(<%= product.getId() %>)">+</button>
                                 </div>
                             </div>
                         </div>
@@ -201,6 +203,40 @@
 
     </div>
 </main>
+
+<script>
+    function incrementQuantity(productId) {
+        const input = document.getElementById('quantity-' + productId);
+        let value = parseInt(input.value) || 0;
+        if (value < 99) {
+            input.value = value + 1;
+            updateInputStyle(input);
+        }
+    }
+
+    function decrementQuantity(productId) {
+        const input = document.getElementById('quantity-' + productId);
+        let value = parseInt(input.value) || 0;
+        if (value > 0) {
+            input.value = value - 1;
+            updateInputStyle(input);
+        }
+    }
+
+    function updateInputStyle(input) {
+        if (parseInt(input.value) > 0) {
+            input.classList.add('has-value');
+        } else {
+            input.classList.remove('has-value');
+        }
+    }
+
+    // Initialize styles on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.quantity-input');
+        inputs.forEach(input => updateInputStyle(input));
+    });
+</script>
 
 </body>
 </html>

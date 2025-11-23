@@ -1,4 +1,4 @@
-package org.foodapp.foodapp.Controller;
+package org.foodapp.foodapp.Controller; // Ensure package matches your structure
 
 import org.foodapp.foodapp.Product;
 import org.foodapp.foodapp.ProductDAO;
@@ -40,11 +40,12 @@ public class ProductActionServlet extends HttpServlet {
         Product product = new Product();
 
         String action = null;
-        String manualUrl = null; // To hold the text URL
+        String manualUrl = null;
         FileItem fileItem = null;
         String deleteIdStr = null;
 
         try {
+            // CASE 1: File Upload Request (Add/Edit)
             if (JakartaServletFileUpload.isMultipartContent(request)) {
                 var factory = new DiskFileItemFactory.Builder().get();
                 var upload = new JakartaServletFileUpload(factory);
@@ -62,16 +63,14 @@ public class ProductActionServlet extends HttpServlet {
                         else if (fieldName.equals("price")) product.setPrice(Double.parseDouble(value));
                         else if (fieldName.equals("category")) product.setCategory(value);
                         else if (fieldName.equals("productId")) deleteIdStr = value;
-                            // Capture the manual URL text field
                         else if (fieldName.equals("imageUrl")) manualUrl = value;
                     } else {
                         if (item.getSize() > 0) fileItem = item;
                     }
                 }
 
-                // --- HYBRID IMAGE LOGIC ---
+                // Hybrid Image Logic
                 if (fileItem != null) {
-                    // 1. If File Uploaded -> Save to Disk
                     String uploadPath = getServletContext().getRealPath("/") + "uploads";
                     File uploadDir = new File(uploadPath);
                     if (!uploadDir.exists()) uploadDir.mkdir();
@@ -81,31 +80,41 @@ public class ProductActionServlet extends HttpServlet {
                     String savedFileName = UUID.randomUUID().toString() + fileExtension;
 
                     fileItem.write(new File(uploadPath + File.separator + savedFileName).toPath());
-                    product.setImageUrl(savedFileName); // Save "123.jpg"
-
+                    product.setImageUrl(savedFileName);
                 } else if (manualUrl != null && !manualUrl.trim().isEmpty()) {
-                    // 2. If No File, but URL Text exists -> Save URL
-                    product.setImageUrl(manualUrl); // Save "https://..."
+                    product.setImageUrl(manualUrl);
                 }
-                // ---------------------------
 
+                // Execute Action
                 if ("add".equals(action)) {
                     boolean success = productDAO.addProduct(product);
                     redirectURL += success ? "?success=Product added!" : "?error=Failed.";
                 } else if ("update".equals(action)) {
                     if (product.getImageUrl() == null) {
-                        // If no new file AND no new URL, keep old one
                         Product oldProduct = productDAO.getProductById(product.getId());
                         product.setImageUrl(oldProduct.getImageUrl());
                     }
                     boolean success = productDAO.updateProduct(product);
                     redirectURL += success ? "?success=Updated!" : "?error=Failed.";
                 } else if ("delete".equals(action) && deleteIdStr != null) {
+                    // This handles delete ONLY if the delete form was multipart (rare)
                     boolean success = productDAO.deleteProduct(Integer.parseInt(deleteIdStr));
                     redirectURL += success ? "?success=Deleted!" : "?error=Failed.";
                 }
+
             }
-            // ... (keep your existing 'else' block for simple delete actions) ...
+            // CASE 2: Standard Request (The Fix for Delete!)
+            else {
+                action = request.getParameter("action");
+
+                if ("delete".equals(action)) {
+                    String idParam = request.getParameter("productId");
+                    if (idParam != null) {
+                        boolean success = productDAO.deleteProduct(Integer.parseInt(idParam));
+                        redirectURL += success ? "?success=Deleted!" : "?error=Failed to delete (Check orders).";
+                    }
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

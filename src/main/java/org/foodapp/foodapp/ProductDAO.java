@@ -194,6 +194,30 @@ public class ProductDAO {
         }
         return products;
     }
+    /**
+     * Fetches a list of all unique categories currently in the database.
+     * Used for the Admin dropdown menu.
+     * @return List of category strings.
+     */
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT category FROM products ORDER BY category ASC";
+
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String cat = rs.getString("category");
+                if (cat != null && !cat.isEmpty()) {
+                    categories.add(cat);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
 }
 
 

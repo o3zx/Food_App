@@ -29,7 +29,6 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("loggedIn", true);
 
-            // 4. Role-Based Redirects (Moved from JSP)
             if ("ADMIN".equals(user.getRole())) {
                 response.sendRedirect("adminDashboard.jsp");
             } else if ("DRIVER".equals(user.getRole())) {
@@ -39,11 +38,8 @@ public class LoginServlet extends HttpServlet {
             }
 
         } else {
-            // 5. Error Handling
-            // Instead of setting a local string, we attach it to the request
             request.setAttribute("errorMessage", "Invalid username or password.");
 
-            // Forward back to the JSP to show the error
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

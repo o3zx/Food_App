@@ -272,44 +272,75 @@
     color: var(--color-primary);
 }
 
-/* Quantity Selector - Enhanced */
+/* Quantity Selector - Enhanced with +/- Buttons */
 .quantity-selector {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    gap: 0;
     background-color: var(--color-background);
-    padding: var(--spacing-xs);
     border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    transition: all var(--transition-fast);
 }
 
-.quantity-label {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
-    padding-left: var(--spacing-xs);
+.quantity-selector:hover {
+    border-color: var(--color-primary);
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-white);
+    border: none;
+    color: var(--color-primary);
+    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 0;
+    user-select: none;
+}
+
+.quantity-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.quantity-btn:active {
+    transform: scale(0.95);
+}
+
+.quantity-btn-minus {
+    border-right: 1px solid var(--color-border);
+}
+
+.quantity-btn-plus {
+    border-left: 1px solid var(--color-border);
 }
 
 .quantity-input {
-    width: 50px;
-    padding: var(--spacing-xs);
+    width: 45px;
+    padding: var(--spacing-xs) 0;
     text-align: center;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border: none;
     background-color: var(--color-white);
+    color: var(--color-text-primary);
     transition: all var(--transition-fast);
+    pointer-events: none;
 }
 
 .quantity-input:focus {
     outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-/* Value > 0 - Highlight the card */
-.quantity-input:not([value="0"]):valid {
-    border-color: var(--color-secondary);
+/* Value > 0 - Highlight the input */
+.quantity-input.has-value {
     background-color: #E8F5E9;
     color: var(--color-secondary);
 }
@@ -486,8 +517,14 @@
         font-size: var(--font-size-lg);
     }
 
+    .quantity-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
     .quantity-input {
-        width: 45px;
+        width: 40px;
     }
 
     .cart-submit-bar {
@@ -499,7 +536,3 @@
         padding: var(--spacing-sm) var(--spacing-lg);
     }
 }
-
-
-
-

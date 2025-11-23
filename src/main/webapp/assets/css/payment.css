@@ -192,14 +192,37 @@
 }
 
 .option-icon {
-    font-size: var(--font-size-3xl);
-    width: 50px;
+    width: 60px;
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--color-white);
     border-radius: var(--radius-md);
+    padding: var(--spacing-xs);
+}
+
+/* Payment Logo Styles */
+.payment-logo {
+    width: 55px;
+    height: auto;
+    max-height: 45px;
+    object-fit: contain;
+}
+
+.payment-icon-group {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.payment-logo-small {
+    width: 32px;
+    height: auto;
+    max-height: 20px;
+    object-fit: contain;
 }
 
 .option-details {
@@ -312,9 +335,18 @@
     }
 
     .option-icon {
-        font-size: var(--font-size-2xl);
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 45px;
+    }
+
+    .payment-logo {
+        width: 45px;
+        max-height: 38px;
+    }
+
+    .payment-logo-small {
+        width: 28px;
+        max-height: 18px;
     }
 }
 
@@ -367,9 +399,18 @@
     }
 
     .option-icon {
-        width: 36px;
-        height: 36px;
-        font-size: var(--font-size-xl);
+        width: 45px;
+        height: 40px;
+    }
+
+    .payment-logo {
+        width: 38px;
+        max-height: 32px;
+    }
+
+    .payment-logo-small {
+        width: 24px;
+        max-height: 15px;
     }
 
     .option-name {

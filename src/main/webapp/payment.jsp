@@ -37,9 +37,9 @@
     <title>Payment - FoodApp</title>
 
     <!-- Global Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <!-- Page-Specific Styles -->
-    <link rel="stylesheet" href="assets/css/payment.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/payment.css">
 </head>
 <body>
 
@@ -107,7 +107,9 @@
                         <label class="payment-option" for="paypal">
                             <input type="radio" id="paypal" name="paymentMethod" value="paypal" checked>
                             <div class="option-content">
-                                <div class="option-icon">💳</div>
+                                <div class="option-icon">
+                                    <img src="https://raw.githubusercontent.com/datatrans/payment-logos/master/assets/apm/paypal.svg" alt="PayPal" class="payment-logo">
+                                </div>
                                 <div class="option-details">
                                     <span class="option-name">PayPal</span>
                                     <span class="option-description">Pay securely with PayPal</span>
@@ -120,7 +122,9 @@
                         <label class="payment-option" for="applepay">
                             <input type="radio" id="applepay" name="paymentMethod" value="applepay">
                             <div class="option-content">
-                                <div class="option-icon">🍎</div>
+                                <div class="option-icon">
+                                    <img src="https://raw.githubusercontent.com/datatrans/payment-logos/master/assets/wallets/apple-pay.svg" alt="Apple Pay" class="payment-logo">
+                                </div>
                                 <div class="option-details">
                                     <span class="option-name">Apple Pay</span>
                                     <span class="option-description">Quick and secure payment</span>
@@ -133,10 +137,13 @@
                         <label class="payment-option" for="card">
                             <input type="radio" id="card" name="paymentMethod" value="card">
                             <div class="option-content">
-                                <div class="option-icon">💳</div>
+                                <div class="option-icon payment-icon-group">
+                                    <img src="https://raw.githubusercontent.com/datatrans/payment-logos/master/assets/cards/visa.svg" alt="Visa" class="payment-logo-small">
+                                    <img src="https://raw.githubusercontent.com/datatrans/payment-logos/master/assets/cards/mastercard.svg" alt="Mastercard" class="payment-logo-small">
+                                </div>
                                 <div class="option-details">
                                     <span class="option-name">Credit/Debit Card</span>
-                                    <span class="option-description">Test payment method</span>
+                                    <span class="option-description">Visa, Mastercard & more</span>
                                 </div>
                             </div>
                             <div class="option-checkmark">✓</div>
